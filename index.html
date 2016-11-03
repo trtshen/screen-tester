@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Screen Tester</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-with-addons.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.min.js"></script>
+
+	<style>
+		.test {
+		    position : absolute;
+		    width    : 200px;
+		    height   : 200px;
+		    left     : 50%;
+		    top      : 50%;
+		    margin-left : -100px;
+		    margin-top  : -100px;
+		}
+
+		:-webkit-full-screen {
+			background: pink;
+		}
+	</style>
+</head>
+<body>
+	<div id="content"></div>
+	<script type="text/babel">
+		var ColourChanger = React.createClass({
+		    componentDidMount: function () {
+		        $('html').on('click', this.changeColour);
+		    },
+		    componentWillUnmount: function () {
+		        document.body.removeEventListener('click', this.changeColour);
+		    },
+			getInitialState: function() {
+				return {
+					colours: [
+						'rgb(255,0,0)',
+						'rgb(0,255,0)',
+						'rgb(0,0,255)',
+						'rgb(255,255,0)',
+						'rgb(255, 0, 255)',
+						'rgb(0, 255, 255)',
+						'rgb(0, 0, 0)',
+						'rgb(255, 255, 255)',
+						'rgb(127, 127, 127)',
+					],
+					colourIndex: 0
+				};
+			},
+			changeColour: function() {
+				let colourIndex = this.state.colourIndex%9;
+				$('html').css({
+					background: this.state.colours[colourIndex]
+				});
+				this.state.colourIndex++;
+			},
+			render: function() {
+				return (
+					<button className="btn btn-default">Change Colour</button>
+				);
+			}
+		});
+
+		var ToggleFullScreen = React.createClass({
+			toggleScreen: function() {
+				var elem = document.documentElement;
+
+				if (!document.fullscreenElement &&
+				    !document.mozFullScreenElement &&
+			      	!document.webkitFullscreenElement &&
+			      	!document.msFullscreenElement) {
+
+					if (elem.requestFullscreen) {
+						elem.requestFullscreen();
+					} else if (elem.mozRequestFullScreen) {
+						elem.mozRequestFullScreen();
+					} else if (elem.webkitRequestFullscreen) {
+						elem.webkitRequestFullscreen();
+					} else if (elem.msRequestFullscreen) {
+						elem.msRequestFullscreen();
+					}
+		      	} else {
+				    if (document.exitFullscreen) {
+				      document.exitFullscreen();
+				    } else if (document.msExitFullscreen) {
+				      document.msExitFullscreen();
+				    } else if (document.mozCancelFullScreen) {
+				      document.mozCancelFullScreen();
+				    } else if (document.webkitExitFullscreen) {
+				      document.webkitExitFullscreen();
+				    }
+		      	}
+			},
+			render: function() {
+				return (
+					<button className="btn btn-default" onClick={this.toggleScreen}>Toggle Full Screen</button>
+				);
+			}
+		});
+
+		var ScreenTester = React.createClass({
+		    componentDidMount: function () {
+		        $('html').on('click', this.changeColour);
+		    },
+		    componentWillUnmount: function () {
+		        document.body.removeEventListener('click', this.changeColour);
+		    },
+			getInitialState: function() {
+				return {
+					colours: [
+						'rgb(255,0,0)',
+						'rgb(0,255,0)',
+						'rgb(0,0,255)',
+						'rgb(255,255,0)',
+						'rgb(255, 0, 255)',
+						'rgb(0, 255, 255)',
+						'rgb(0, 0, 0)',
+						'rgb(255, 255, 255)',
+						'rgb(127, 127, 127)',
+					],
+					colourIndex: 0
+				};
+			},
+			changeColour: function() {
+				let colourIndex = this.state.colourIndex%9;
+				$('html').css({
+					background: this.state.colours[colourIndex]
+				});
+				this.state.colourIndex++;
+			},
+			render: function() {
+			    return (
+			    	<div className="test">
+				    	<ToggleFullScreen />
+			    	</div>
+			    );
+			}
+		});
+
+		ReactDOM.render(
+		  <ScreenTester />,
+		  document.body
+		);
+	</script>
+</body>
+</html>
