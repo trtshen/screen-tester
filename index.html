@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Screen Tester</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.production.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.production.min.js"></script>
+	<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+	<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
 	<style>
 		body, html {
@@ -89,28 +89,31 @@
 	<div id="background"></div>
 	<div id="content"></div>
 	<script type="text/babel">
-		var ToggleFullScreen = React.createClass({
-			getInitialState: function() {
-				return {
+		class ToggleFullScreen extends React.Component {
+			constructor(props) {
+				super(props);
+				this.state = {
 					isFullScreen: false,
 					buttonVisible: true
 				};
-			},
+				this.hideTimer = null;
+				// Bind methods
+				this.onFullScreenChange = this.onFullScreenChange.bind(this);
+				this.showButton = this.showButton.bind(this);
+				this.toggleScreen = this.toggleScreen.bind(this);
+			}
 			
-			componentDidMount: function() {
-				// Add event listeners for fullscreen change
+			componentDidMount() {
 				document.addEventListener('fullscreenchange', this.onFullScreenChange);
 				document.addEventListener('webkitfullscreenchange', this.onFullScreenChange);
 				document.addEventListener('mozfullscreenchange', this.onFullScreenChange);
 				document.addEventListener('MSFullscreenChange', this.onFullScreenChange);
 				
-				// Add event listeners for mouse movement and touch
 				document.addEventListener('mousemove', this.showButton);
 				document.addEventListener('touchstart', this.showButton);
-			},
+			}
 			
-			componentWillUnmount: function() {
-				// Clean up event listeners
+			componentWillUnmount() {
 				document.removeEventListener('fullscreenchange', this.onFullScreenChange);
 				document.removeEventListener('webkitfullscreenchange', this.onFullScreenChange);
 				document.removeEventListener('mozfullscreenchange', this.onFullScreenChange);
@@ -119,14 +122,13 @@
 				document.removeEventListener('mousemove', this.showButton);
 				document.removeEventListener('touchstart', this.showButton);
 				
-				// Clear any existing timers
 				if (this.hideTimer) {
 					clearTimeout(this.hideTimer);
 				}
-			},
+			}
 			
-			onFullScreenChange: function() {
-				var isFullScreen = !!(
+			onFullScreenChange() {
+				const isFullScreen = !!(
 					document.fullscreenElement ||
 					document.mozFullScreenElement ||
 					document.webkitFullscreenElement ||
@@ -141,28 +143,24 @@
 					isFullScreen: isFullScreen,
 					buttonVisible: !isFullScreen ? true : this.state.buttonVisible
 				});
-			},
+			}
 			
-			showButton: function() {
-				// Only handle show/hide logic when in fullscreen
+			showButton() {
 				if (!this.state.isFullScreen) return;
 				
-				// Show button
 				this.setState({ buttonVisible: true });
 				
-				// Clear existing timer if there is one
 				if (this.hideTimer) {
 					clearTimeout(this.hideTimer);
 				}
 				
-				// Set new timer to hide button after 1 second
 				this.hideTimer = setTimeout(() => {
 					this.setState({ buttonVisible: false });
 				}, 500);
-			},
+			}
 			
-			toggleScreen: function() {
-				var elem = document.documentElement;
+			toggleScreen() {
+				const elem = document.documentElement;
 
 				if (!document.fullscreenElement &&
 				    !document.mozFullScreenElement &&
@@ -189,26 +187,22 @@
 				      document.webkitExitFullscreen();
 				    }
 		      	}
-			},
-			render: function() {
-				var buttonClass = "custom-button " + 
+			}
+
+			render() {
+				const buttonClass = "custom-button " + 
 					(this.state.isFullScreen && !this.state.buttonVisible ? "hidden-button" : "visible-button");
 				
 				return (
 					<button className={buttonClass} onClick={this.toggleScreen}>Toggle Full Screen</button>
 				);
 			}
-		});
+		}
 
-		var ScreenTester = React.createClass({
-		    componentDidMount: function () {
-		        document.documentElement.addEventListener('click', this.handleClick);
-		    },
-		    componentWillUnmount: function () {
-		        document.documentElement.removeEventListener('click', this.handleClick);
-		    },
-			getInitialState: function() {
-				return {
+		class ScreenTester extends React.Component {
+			constructor(props) {
+				super(props);
+				this.state = {
 					patterns: [
 						// Solid colors
 						'rgb(255,0,0)', // Red
@@ -220,7 +214,7 @@
 						'rgb(0,0,0)', // Black
 						'rgb(255,255,255)', // White
 						'rgb(192,192,192)', // Light Grey (75%)
-						'rgb(128,128,128)', // Mid Grey (50%) - Note: was 127,127,127, standard is 128
+						'rgb(128,128,128)', // Mid Grey (50%)
 						'rgb(64,64,64)', // Dark Grey (25%)
 						
 						// Linear gradients
@@ -262,39 +256,57 @@
 					],
 					patternIndex: 0
 				};
-			},
-			handleClick: function(event) {
-				if (event.target.tagName !== 'BUTTON') {
-					this.changeColour();
+				// Bind methods
+				this.handleClick = this.handleClick.bind(this);
+				this.changeColour = this.changeColour.bind(this);
+			}
+
+		    componentDidMount() {
+		        document.documentElement.addEventListener('click', this.handleClick);
+		    }
+
+		    componentWillUnmount() {
+		        document.documentElement.removeEventListener('click', this.handleClick);
+		    }
+			
+			handleClick(event) {
+				// Check if the click target is the button or inside the button's container
+				if (event.target.closest('.custom-button')) {
+					return; 
 				}
-			},
-			changeColour: function() {
-				var nextIndex = (++this.state.patternIndex) % this.state.patterns.length;
-				var backgroundElement = document.getElementById('background');
-				var pattern = this.state.patterns[nextIndex];
-				
-				backgroundElement.style.background = pattern;
-				
-				if (document.fullscreenElement || document.webkitFullscreenElement || 
-					document.mozFullScreenElement || document.msFullscreenElement) {
-					document.body.style.background = pattern;
-				}
-				
-				this.setState({ patternIndex: nextIndex });
-			},
-			render: function() {
+				this.changeColour();
+			}
+
+			changeColour() {
+				// Use functional setState to ensure patternIndex is updated based on the previous state
+				this.setState(prevState => {
+					const nextIndex = (prevState.patternIndex + 1) % prevState.patterns.length;
+					const backgroundElement = document.getElementById('background');
+					const pattern = prevState.patterns[nextIndex];
+					
+					backgroundElement.style.background = pattern;
+					
+					if (document.fullscreenElement || document.webkitFullscreenElement || 
+						document.mozFullScreenElement || document.msFullscreenElement) {
+						document.body.style.background = pattern;
+					}
+					return { patternIndex: nextIndex };
+				});
+			}
+
+			render() {
 			    return (
 			    	<div className="test">
 				    	<ToggleFullScreen />
 			    	</div>
 			    );
 			}
-		});
+		}
 
-		ReactDOM.render(
-		  <ScreenTester />,
-		  document.getElementById('content')
-		);
+		// Updated rendering for React 18
+		const container = document.getElementById('content');
+		const root = ReactDOM.createRoot(container);
+		root.render(<ScreenTester />);
 	</script>
 </body>
 </html>
