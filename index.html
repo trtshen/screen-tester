@@ -11,6 +11,22 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.min.js"></script>
 
 	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			overflow: hidden;
+		}
+
+		#background {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: -1;
+		}
+
 		.test {
 		    position : absolute;
 		    width    : 200px;
@@ -19,6 +35,7 @@
 		    top      : 50%;
 		    margin-left : -100px;
 		    margin-top  : -100px;
+		    z-index: 1;
 		}
 
 		:-webkit-full-screen {
@@ -37,45 +54,9 @@
 	</style>
 </head>
 <body>
+	<div id="background"></div>
 	<div id="content"></div>
 	<script type="text/babel">
-		var ColourChanger = React.createClass({
-		    componentDidMount: function () {
-		        $('html').on('click', this.changeColour);
-		    },
-		    componentWillUnmount: function () {
-		        document.body.removeEventListener('click', this.changeColour);
-		    },
-			getInitialState: function() {
-				return {
-					colours: [
-						'rgb(255,0,0)',
-						'rgb(0,255,0)',
-						'rgb(0,0,255)',
-						'rgb(255,255,0)',
-						'rgb(255, 0, 255)',
-						'rgb(0, 255, 255)',
-						'rgb(0, 0, 0)',
-						'rgb(255, 255, 255)',
-						'rgb(127, 127, 127)',
-					],
-					colourIndex: 0
-				};
-			},
-			changeColour: function() {
-				let colourIndex = this.state.colourIndex%9;
-				$('html').css({
-					background: this.state.colours[colourIndex]
-				});
-				this.state.colourIndex++;
-			},
-			render: function() {
-				return (
-					<button className="btn btn-default">Change Colour</button>
-				);
-			}
-		});
-
 		var ToggleFullScreen = React.createClass({
 			getInitialState: function() {
 				return {
@@ -218,6 +199,7 @@
 						'repeating-linear-gradient(90deg, red 0px, red 50px, blue 50px, blue 100px)',
 						'repeating-linear-gradient(0deg, green 0px, green 25px, white 25px, white 50px)',
 						'repeating-linear-gradient(45deg, black 0px, black 10px, white 10px, white 20px)',
+						'repeating-linear-gradient(-45deg, black 0px, black 5px, white 5px, white 10px)',
 						
 						// Grid patterns
 						'linear-gradient(90deg, transparent 49%, black 49%, black 51%, transparent 51%), linear-gradient(0deg, transparent 49%, black 49%, black 51%, transparent 51%)',
@@ -232,11 +214,10 @@
 				};
 			},
 			changeColour: function() {
-				let patternIndex = this.state.patternIndex % this.state.patterns.length;
-				$('html').css({
-					background: this.state.patterns[patternIndex]
-				});
-				this.state.patternIndex++;
+				var nextIndex = (++this.state.patternIndex) % this.state.patterns.length;
+				document.getElementById('background').style.background = this.state.patterns[nextIndex];
+				this.setState({ patternIndex: nextIndex });
+				console.log("Changing background to pattern index:", nextIndex, "Pattern:", this.state.patterns[nextIndex]);
 			},
 			render: function() {
 			    return (
@@ -249,7 +230,7 @@
 
 		ReactDOM.render(
 		  <ScreenTester />,
-		  document.body
+		  document.getElementById('content')
 		);
 	</script>
 </body>
