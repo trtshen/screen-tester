@@ -192,7 +192,8 @@
 		    },
 			getInitialState: function() {
 				return {
-					colours: [
+					patterns: [
+						// Solid colors
 						'rgb(255,0,0)',
 						'rgb(0,255,0)',
 						'rgb(0,0,255)',
@@ -202,16 +203,40 @@
 						'rgb(0, 0, 0)',
 						'rgb(255, 255, 255)',
 						'rgb(127, 127, 127)',
+						
+						// Linear gradients
+						'linear-gradient(to right, red, blue)',
+						'linear-gradient(to bottom, green, yellow)',
+						'linear-gradient(45deg, purple, orange)',
+						'linear-gradient(to right, black, white)',
+						
+						// Radial gradients  
+						'radial-gradient(circle, red, blue)',
+						'radial-gradient(ellipse, white, black)',
+						
+						// Stripe patterns
+						'repeating-linear-gradient(90deg, red 0px, red 50px, blue 50px, blue 100px)',
+						'repeating-linear-gradient(0deg, green 0px, green 25px, white 25px, white 50px)',
+						'repeating-linear-gradient(45deg, black 0px, black 10px, white 10px, white 20px)',
+						
+						// Grid patterns
+						'linear-gradient(90deg, transparent 49%, black 49%, black 51%, transparent 51%), linear-gradient(0deg, transparent 49%, black 49%, black 51%, transparent 51%)',
+						
+						// Checkerboard pattern (using linear gradients for better compatibility)
+						'repeating-linear-gradient(0deg, black 0px, black 25px, white 25px, white 50px), repeating-linear-gradient(90deg, black 0px, black 25px, transparent 25px, transparent 50px)',
+						
+						// Color transition tests
+						'linear-gradient(to right, #000000, #111111, #222222, #333333, #444444, #555555, #666666, #777777, #888888, #999999, #aaaaaa, #bbbbbb, #cccccc, #dddddd, #eeeeee, #ffffff)'
 					],
-					colourIndex: 0
+					patternIndex: 0
 				};
 			},
 			changeColour: function() {
-				let colourIndex = this.state.colourIndex%9;
+				let patternIndex = this.state.patternIndex % this.state.patterns.length;
 				$('html').css({
-					background: this.state.colours[colourIndex]
+					background: this.state.patterns[patternIndex]
 				});
-				this.state.colourIndex++;
+				this.state.patternIndex++;
 			},
 			render: function() {
 			    return (
