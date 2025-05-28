@@ -24,6 +24,16 @@
 		:-webkit-full-screen {
 			background: pink;
 		}
+
+		.hidden-button {
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+
+		.visible-button {
+			opacity: 1;
+			transition: opacity 0.3s ease;
+		}
 	</style>
 </head>
 <body>
@@ -67,6 +77,73 @@
 		});
 
 		var ToggleFullScreen = React.createClass({
+			getInitialState: function() {
+				return {
+					isFullScreen: false,
+					buttonVisible: true
+				};
+			},
+			
+			componentDidMount: function() {
+				// Add event listeners for fullscreen change
+				document.addEventListener('fullscreenchange', this.onFullScreenChange);
+				document.addEventListener('webkitfullscreenchange', this.onFullScreenChange);
+				document.addEventListener('mozfullscreenchange', this.onFullScreenChange);
+				document.addEventListener('MSFullscreenChange', this.onFullScreenChange);
+				
+				// Add event listeners for mouse movement and touch
+				document.addEventListener('mousemove', this.showButton);
+				document.addEventListener('touchstart', this.showButton);
+			},
+			
+			componentWillUnmount: function() {
+				// Clean up event listeners
+				document.removeEventListener('fullscreenchange', this.onFullScreenChange);
+				document.removeEventListener('webkitfullscreenchange', this.onFullScreenChange);
+				document.removeEventListener('mozfullscreenchange', this.onFullScreenChange);
+				document.removeEventListener('MSFullscreenChange', this.onFullScreenChange);
+				
+				document.removeEventListener('mousemove', this.showButton);
+				document.removeEventListener('touchstart', this.showButton);
+				
+				// Clear any existing timers
+				if (this.hideTimer) {
+					clearTimeout(this.hideTimer);
+				}
+			},
+			
+			onFullScreenChange: function() {
+				var isFullScreen = !!(
+					document.fullscreenElement ||
+					document.mozFullScreenElement ||
+					document.webkitFullscreenElement ||
+					document.msFullscreenElement
+				);
+				
+				this.setState({
+					isFullScreen: isFullScreen,
+					buttonVisible: !isFullScreen ? true : this.state.buttonVisible
+				});
+			},
+			
+			showButton: function() {
+				// Only handle show/hide logic when in fullscreen
+				if (!this.state.isFullScreen) return;
+				
+				// Show button
+				this.setState({ buttonVisible: true });
+				
+				// Clear existing timer if there is one
+				if (this.hideTimer) {
+					clearTimeout(this.hideTimer);
+				}
+				
+				// Set new timer to hide button after 1 second
+				this.hideTimer = setTimeout(() => {
+					this.setState({ buttonVisible: false });
+				}, 500);
+			},
+			
 			toggleScreen: function() {
 				var elem = document.documentElement;
 
@@ -97,8 +174,11 @@
 		      	}
 			},
 			render: function() {
+				var buttonClass = "btn btn-default " + 
+					(this.state.isFullScreen && !this.state.buttonVisible ? "hidden-button" : "visible-button");
+				
 				return (
-					<button className="btn btn-default" onClick={this.toggleScreen}>Toggle Full Screen</button>
+					<button className={buttonClass} onClick={this.toggleScreen}>Toggle Full Screen</button>
 				);
 			}
 		});
