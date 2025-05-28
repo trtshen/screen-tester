@@ -4,11 +4,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Screen Tester</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-with-addons.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.production.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.production.min.js"></script>
 
 	<style>
 		body, html {
@@ -38,8 +36,42 @@
 		    z-index: 1;
 		}
 
-		:-webkit-full-screen {
-			background: pink;
+		.custom-button { 
+			display: inline-block;
+			padding: 6px 12px;
+			margin-bottom: 0;
+			font-size: 14px;
+			font-weight: 400;
+			line-height: 1.42857143;
+			text-align: center;
+			white-space: nowrap;
+			vertical-align: middle;
+			cursor: pointer;
+			user-select: none;
+			background-image: none;
+			border: 1px solid transparent;
+			border-radius: 4px;
+			color: #333;
+			background-color: #fff;
+			border-color: #ccc;
+		}
+
+		.custom-button:hover {
+			color: #333;
+			background-color: #e6e6e6;
+			border-color: #adadad;
+		}
+
+		:-webkit-full-screen #background {
+			background: inherit !important;
+		}
+
+		:-moz-full-screen #background {
+			background: inherit !important;
+		}
+
+		:fullscreen #background {
+			background: inherit !important;
 		}
 
 		.hidden-button {
@@ -101,6 +133,10 @@
 					document.msFullscreenElement
 				);
 				
+				if (!isFullScreen) {
+					document.body.style.background = '';
+				}
+				
 				this.setState({
 					isFullScreen: isFullScreen,
 					buttonVisible: !isFullScreen ? true : this.state.buttonVisible
@@ -155,7 +191,7 @@
 		      	}
 			},
 			render: function() {
-				var buttonClass = "btn btn-default " + 
+				var buttonClass = "custom-button " + 
 					(this.state.isFullScreen && !this.state.buttonVisible ? "hidden-button" : "visible-button");
 				
 				return (
@@ -166,24 +202,26 @@
 
 		var ScreenTester = React.createClass({
 		    componentDidMount: function () {
-		        $('html').on('click', this.changeColour);
+		        document.documentElement.addEventListener('click', this.handleClick);
 		    },
 		    componentWillUnmount: function () {
-		        document.body.removeEventListener('click', this.changeColour);
+		        document.documentElement.removeEventListener('click', this.handleClick);
 		    },
 			getInitialState: function() {
 				return {
 					patterns: [
 						// Solid colors
-						'rgb(255,0,0)',
-						'rgb(0,255,0)',
-						'rgb(0,0,255)',
-						'rgb(255,255,0)',
-						'rgb(255, 0, 255)',
-						'rgb(0, 255, 255)',
-						'rgb(0, 0, 0)',
-						'rgb(255, 255, 255)',
-						'rgb(127, 127, 127)',
+						'rgb(255,0,0)', // Red
+						'rgb(0,255,0)', // Green
+						'rgb(0,0,255)', // Blue
+						'rgb(255,255,0)', // Yellow
+						'rgb(255,0,255)', // Magenta
+						'rgb(0,255,255)', // Cyan
+						'rgb(0,0,0)', // Black
+						'rgb(255,255,255)', // White
+						'rgb(192,192,192)', // Light Grey (75%)
+						'rgb(128,128,128)', // Mid Grey (50%) - Note: was 127,127,127, standard is 128
+						'rgb(64,64,64)', // Dark Grey (25%)
 						
 						// Linear gradients
 						'linear-gradient(to right, red, blue)',
@@ -203,21 +241,46 @@
 						
 						// Grid patterns
 						'linear-gradient(90deg, transparent 49%, black 49%, black 51%, transparent 51%), linear-gradient(0deg, transparent 49%, black 49%, black 51%, transparent 51%)',
+						// Finer grid
+						'repeating-linear-gradient(0deg, #ccc, #ccc 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, #ccc, #ccc 1px, transparent 1px, transparent 20px)',
 						
 						// Checkerboard pattern (using linear gradients for better compatibility)
 						'repeating-linear-gradient(0deg, black 0px, black 25px, white 25px, white 50px), repeating-linear-gradient(90deg, black 0px, black 25px, transparent 25px, transparent 50px)',
-						
+						// Finer checkerboard
+						'repeating-linear-gradient(45deg, #000 0, #000 5px, #fff 5px, #fff 10px), repeating-linear-gradient(-45deg, #000 0, #000 5px, #fff 5px, #fff 10px)',
+
 						// Color transition tests
-						'linear-gradient(to right, #000000, #111111, #222222, #333333, #444444, #555555, #666666, #777777, #888888, #999999, #aaaaaa, #bbbbbb, #cccccc, #dddddd, #eeeeee, #ffffff)'
+						'linear-gradient(to right, #000000, #111111, #222222, #333333, #444444, #555555, #666666, #777777, #888888, #999999, #aaaaaa, #bbbbbb, #cccccc, #dddddd, #eeeeee, #ffffff)',
+						
+						// Color bars (simplified version)
+						'linear-gradient(to right, red 0%, red 14.28%, green 14.28%, green 28.56%, blue 28.56%, blue 42.84%, cyan 42.84%, cyan 57.12%, magenta 57.12%, magenta 71.4%, yellow 71.4%, yellow 85.68%, white 85.68%, white 100%)',
+						
+						// High frequency vertical lines
+						'repeating-linear-gradient(to right, black 0px, black 1px, white 1px, white 2px)',
+						// High frequency horizontal lines
+						'repeating-linear-gradient(to bottom, black 0px, black 1px, white 1px, white 2px)'
 					],
 					patternIndex: 0
 				};
 			},
+			handleClick: function(event) {
+				if (event.target.tagName !== 'BUTTON') {
+					this.changeColour();
+				}
+			},
 			changeColour: function() {
 				var nextIndex = (++this.state.patternIndex) % this.state.patterns.length;
-				document.getElementById('background').style.background = this.state.patterns[nextIndex];
+				var backgroundElement = document.getElementById('background');
+				var pattern = this.state.patterns[nextIndex];
+				
+				backgroundElement.style.background = pattern;
+				
+				if (document.fullscreenElement || document.webkitFullscreenElement || 
+					document.mozFullScreenElement || document.msFullscreenElement) {
+					document.body.style.background = pattern;
+				}
+				
 				this.setState({ patternIndex: nextIndex });
-				console.log("Changing background to pattern index:", nextIndex, "Pattern:", this.state.patterns[nextIndex]);
 			},
 			render: function() {
 			    return (
