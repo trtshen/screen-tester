@@ -2,10 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
-    types: [ closed ]
+    branches: [ master ]
 
 # Allow only one concurrent deployment
 concurrency:
@@ -26,19 +23,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Security: Only checkout specific ref to prevent code injection
           ref: ${{ github.sha }}
-        
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository as it's a simple static site
           path: '.'
 
   # Deployment job
   deploy:
-    # Only deploy on pushes to master/main and merged PRs from trusted sources
-    if: (github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')) || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
