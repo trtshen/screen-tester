@@ -168,14 +168,19 @@ class ScreenTester extends React.Component {
 		// Bind methods
 		this.handleClick = this.handleClick.bind(this);
 		this.changeColour = this.changeColour.bind(this);
+		this.nextPattern = this.nextPattern.bind(this);
+		this.prevPattern = this.prevPattern.bind(this);
+		this.handleKeyDown = this.handleKeyDown.bind(this);
 	}
 
     componentDidMount() {
         document.documentElement.addEventListener('click', this.handleClick);
+        document.addEventListener('keydown', this.handleKeyDown);
     }
 
     componentWillUnmount() {
         document.documentElement.removeEventListener('click', this.handleClick);
+        document.removeEventListener('keydown', this.handleKeyDown);
     }
 	
 	handleClick(event) {
@@ -201,6 +206,50 @@ class ScreenTester extends React.Component {
 			}
 			return { patternIndex: nextIndex };
 		});
+	}
+
+	nextPattern() {
+		this.changeColour();
+	}
+
+	prevPattern() {
+		this.setState(prevState => {
+			const prevIndex = (prevState.patternIndex - 1 + prevState.patterns.length) % prevState.patterns.length;
+			const backgroundElement = document.getElementById('background');
+			const pattern = prevState.patterns[prevIndex];
+			
+			backgroundElement.style.background = pattern;
+			
+			if (document.fullscreenElement || document.webkitFullscreenElement || 
+				document.mozFullScreenElement || document.msFullscreenElement) {
+				document.body.style.background = pattern;
+			}
+			return { patternIndex: prevIndex };
+		});
+	}
+
+	handleKeyDown(e) {
+		switch (e.key) {
+			case "f":
+			case "F":
+				document.fullscreenElement
+					? document.exitFullscreen()
+					: document.documentElement.requestFullscreen();
+				break;
+			case "ArrowRight":
+				this.nextPattern();
+				break;
+			case "ArrowLeft":
+				this.prevPattern();
+				break;
+			case "g":
+			case "G":
+				document.body.classList.toggle("show-grid");
+				break;
+			case "Escape":
+				if (document.fullscreenElement) document.exitFullscreen();
+				break;
+		}
 	}
 
 	render() {
