@@ -246,6 +246,10 @@ class ScreenTester extends React.Component {
 			case "G":
 				document.body.classList.toggle("show-grid");
 				break;
+			case "c":
+			case "C":
+				document.body.classList.toggle("show-crosshair");
+				break;
 			case "Escape":
 				if (document.fullscreenElement) document.exitFullscreen();
 				break;
