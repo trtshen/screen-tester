@@ -161,7 +161,13 @@ class ScreenTester extends React.Component {
 				// High frequency vertical lines
 				'repeating-linear-gradient(to right, black 0px, black 1px, white 1px, white 2px)',
 				// High frequency horizontal lines
-				'repeating-linear-gradient(to bottom, black 0px, black 1px, white 1px, white 2px)'
+				'repeating-linear-gradient(to bottom, black 0px, black 1px, white 1px, white 2px)',
+				
+				// Edge detection frames - 1-pixel borders to test screen cropping
+				// White 1px border on black background
+				'black linear-gradient(white, white) no-repeat 1px 1px / calc(100% - 2px) calc(100% - 2px)',
+				// Black 1px border on white background
+				'white linear-gradient(black, black) no-repeat 1px 1px / calc(100% - 2px) calc(100% - 2px)'
 			],
 			patternIndex: 0
 		};
