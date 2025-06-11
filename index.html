@@ -113,6 +113,90 @@
 			pointer-events: none;
 			z-index: 1001;
 		}
+
+		/* Motion Test Animations */
+		@keyframes bouncing-box {
+			0% { transform: translateX(0px); }
+			25% { transform: translateX(calc(100vw - 100px)); }
+			50% { transform: translateX(calc(100vw - 100px)); }
+			75% { transform: translateX(0px); }
+			100% { transform: translateX(0px); }
+		}
+
+		@keyframes horizontal-scroll {
+			0% { background-position-x: 0%; }
+			100% { background-position-x: 100%; }
+		}
+
+		@keyframes vertical-scroll {
+			0% { background-position-y: 0%; }
+			100% { background-position-y: 100%; }
+		}
+
+		@keyframes diagonal-scroll {
+			0% { background-position: 0% 0%; }
+			100% { background-position: 100% 100%; }
+		}
+
+		/* Flicker Test Animations */
+		@keyframes rapid-flicker {
+			0% { background-color: black; }
+			50% { background-color: white; }
+			100% { background-color: black; }
+		}
+
+		@keyframes slow-flicker {
+			0% { background-color: black; }
+			50% { background-color: white; }
+			100% { background-color: black; }
+		}
+
+		@keyframes ultra-rapid-flicker {
+			0% { background-color: black; }
+			50% { background-color: white; }
+			100% { background-color: black; }
+		}
+
+		/* Motion Test Elements */
+		.bouncing-box::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 0;
+			width: 100px;
+			height: 100px;
+			background-color: red;
+			transform: translateY(-50%);
+			animation: bouncing-box 2s infinite linear;
+		}
+
+		.scrolling-horizontal {
+			background: repeating-linear-gradient(90deg, red 0px, red 50px, blue 50px, blue 100px);
+			animation: horizontal-scroll 1s infinite linear;
+		}
+
+		.scrolling-vertical {
+			background: repeating-linear-gradient(0deg, green 0px, green 25px, white 25px, white 50px);
+			animation: vertical-scroll 1s infinite linear;
+		}
+
+		.scrolling-diagonal {
+			background: repeating-linear-gradient(45deg, black 0px, black 10px, white 10px, white 20px);
+			animation: diagonal-scroll 2s infinite linear;
+		}
+
+		/* Flicker Test Classes */
+		.flicker-slow {
+			animation: slow-flicker 1s infinite;
+		}
+
+		.flicker-medium {
+			animation: rapid-flicker 0.5s infinite;
+		}
+
+		.flicker-fast {
+			animation: ultra-rapid-flicker 0.1s infinite;
+		}
 	</style>
 </head>
 <body>
