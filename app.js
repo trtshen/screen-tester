@@ -189,6 +189,7 @@ class ScreenTester extends React.Component {
 		this.nextPattern = this.nextPattern.bind(this);
 		this.prevPattern = this.prevPattern.bind(this);
 		this.handleKeyDown = this.handleKeyDown.bind(this);
+		this.applyPattern = this.applyPattern.bind(this);
 	}
 
     componentDidMount() {
@@ -209,34 +210,40 @@ class ScreenTester extends React.Component {
 		this.changeColour();
 	}
 
+	applyPattern(pattern) {
+		const backgroundElement = document.getElementById('background');
+		
+		// Clear any existing animation classes
+		backgroundElement.className = '';
+		
+		if (typeof pattern === 'string') {
+			// Regular pattern - apply as background
+			backgroundElement.style.background = pattern;
+		} else if (pattern.type === 'animation') {
+			// Animation pattern - apply class and background if specified
+			backgroundElement.className = pattern.class;
+			backgroundElement.style.background = pattern.background || '';
+		}
+		
+		if (document.fullscreenElement || document.webkitFullscreenElement || 
+			document.mozFullScreenElement || document.msFullscreenElement) {
+			if (typeof pattern === 'string') {
+				document.body.style.background = pattern;
+			} else if (pattern.type === 'animation') {
+				document.body.className = (document.body.className.replace(/\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g, '').trim() + ' ' + pattern.class).trim();
+				document.body.style.background = pattern.background || '';
+			}
+		}
+	}
+
 	changeColour() {
 		// Use functional setState to ensure patternIndex is updated based on the previous state
 		this.setState(prevState => {
 			const nextIndex = (prevState.patternIndex + 1) % prevState.patterns.length;
-			const backgroundElement = document.getElementById('background');
 			const pattern = prevState.patterns[nextIndex];
 			
-			// Clear any existing animation classes
-			backgroundElement.className = '';
+			this.applyPattern(pattern);
 			
-			if (typeof pattern === 'string') {
-				// Regular pattern - apply as background
-				backgroundElement.style.background = pattern;
-			} else if (pattern.type === 'animation') {
-				// Animation pattern - apply class and background if specified
-				backgroundElement.className = pattern.class;
-				backgroundElement.style.background = pattern.background || '';
-			}
-			
-			if (document.fullscreenElement || document.webkitFullscreenElement || 
-				document.mozFullScreenElement || document.msFullscreenElement) {
-				if (typeof pattern === 'string') {
-					document.body.style.background = pattern;
-				} else if (pattern.type === 'animation') {
-					document.body.className = (document.body.className.replace(/\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g, '').trim() + ' ' + pattern.class).trim();
-					document.body.style.background = pattern.background || '';
-				}
-			}
 			return { patternIndex: nextIndex };
 		});
 	}
@@ -248,30 +255,10 @@ class ScreenTester extends React.Component {
 	prevPattern() {
 		this.setState(prevState => {
 			const prevIndex = (prevState.patternIndex - 1 + prevState.patterns.length) % prevState.patterns.length;
-			const backgroundElement = document.getElementById('background');
 			const pattern = prevState.patterns[prevIndex];
 			
-			// Clear any existing animation classes
-			backgroundElement.className = '';
+			this.applyPattern(pattern);
 			
-			if (typeof pattern === 'string') {
-				// Regular pattern - apply as background
-				backgroundElement.style.background = pattern;
-			} else if (pattern.type === 'animation') {
-				// Animation pattern - apply class and background if specified
-				backgroundElement.className = pattern.class;
-				backgroundElement.style.background = pattern.background || '';
-			}
-			
-			if (document.fullscreenElement || document.webkitFullscreenElement || 
-				document.mozFullScreenElement || document.msFullscreenElement) {
-				if (typeof pattern === 'string') {
-					document.body.style.background = pattern;
-				} else if (pattern.type === 'animation') {
-					document.body.className = (document.body.className.replace(/\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g, '').trim() + ' ' + pattern.class).trim();
-					document.body.style.background = pattern.background || '';
-				}
-			}
 			return { patternIndex: prevIndex };
 		});
 	}
