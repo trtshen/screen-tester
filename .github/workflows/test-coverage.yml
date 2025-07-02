@@ -77,7 +77,15 @@ jobs:
       uses: actions/github-script@v7
       with:
         script: |
-          const comment = process.env.coverage_report || "${{ steps.coverage_report.outputs.coverage_report }}";
+          const comment = process.env.coverage_report || `## 📊 Test Coverage Report
+          | Metric | Coverage |
+          |--------|----------|
+          | Lines | 0% (0/0) |
+          | Functions | 0% (0/0) |
+          | Branches | 0% (0/0) |
+
+          Coverage thresholds: Lines ≥80%, Functions ≥80%, Branches ≥80%
+          `;
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
