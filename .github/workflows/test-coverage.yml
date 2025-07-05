@@ -3,7 +3,7 @@ name: Test Coverage
 on:
   pull_request:
     branches: [ master, main ]
-    types: [ closed ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   test:
