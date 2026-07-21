@@ -248,3 +248,66 @@ describe('ScreenTester Component', () => {
     expect(document.documentElement.requestFullscreen).toHaveBeenCalled();
   });
 });
+
+describe('Production ScreenTester animation cleanup', () => {
+  let ProductionScreenTester;
+
+  beforeAll(() => {
+    let renderedElement;
+
+    global.React = React;
+    global.ReactDOM = {
+      createRoot: jest.fn(() => ({
+        render: element => {
+          renderedElement = element;
+        },
+      })),
+    };
+
+    document.body.innerHTML = '<div id="background"></div><div id="content"></div>';
+    require('./app.js');
+    ProductionScreenTester = renderedElement.type;
+  });
+
+  beforeEach(() => {
+    document.body.className = '';
+    document.body.style.background = '';
+    document.body.innerHTML = '<div id="background"></div><div id="content"></div>';
+    Object.defineProperty(document, 'fullscreenElement', {
+      writable: true,
+      value: document.documentElement,
+    });
+  });
+
+  test('stops the last flicker when navigating forward to a normal pattern in fullscreen', () => {
+    render(<ProductionScreenTester />);
+
+    for (let index = 0; index < 37; index++) {
+      fireEvent.keyDown(document, { key: 'ArrowRight', code: 'ArrowRight' });
+    }
+
+    document.body.classList.add('show-grid');
+    expect(document.body).toHaveClass('flicker-fast', 'show-grid');
+
+    fireEvent.keyDown(document, { key: 'ArrowRight', code: 'ArrowRight' });
+
+    expect(document.body).not.toHaveClass('flicker-fast');
+    expect(document.body).toHaveClass('show-grid');
+    expect(document.body.style.background).toBe('rgb(255, 0, 0)');
+  });
+
+  test('stops flicker when navigating backward to a motion pattern in fullscreen', () => {
+    render(<ProductionScreenTester />);
+
+    for (let index = 0; index < 35; index++) {
+      fireEvent.keyDown(document, { key: 'ArrowRight', code: 'ArrowRight' });
+    }
+
+    expect(document.body).toHaveClass('flicker-slow');
+
+    fireEvent.keyDown(document, { key: 'ArrowLeft', code: 'ArrowLeft' });
+
+    expect(document.body).not.toHaveClass('flicker-slow');
+    expect(document.body).toHaveClass('scrolling-diagonal');
+  });
+});

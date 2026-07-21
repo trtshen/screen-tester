@@ -1,3 +1,9 @@
+const ANIMATION_CLASS_PATTERN = /\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g;
+
+function removeAnimationClasses(element) {
+	element.className = element.className.replace(ANIMATION_CLASS_PATTERN, '').trim();
+}
+
 class ToggleFullScreen extends React.Component {
 	constructor(props) {
 		super(props);
@@ -46,7 +52,7 @@ class ToggleFullScreen extends React.Component {
 		
 		if (!isFullScreen) {
 			document.body.style.background = '';
-			document.body.className = document.body.className.replace(/\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g, '').trim();
+			removeAnimationClasses(document.body);
 		}
 		
 		this.setState({
@@ -214,7 +220,7 @@ class ScreenTester extends React.Component {
 		const backgroundElement = document.getElementById('background');
 		
 		// Clear any existing animation classes
-		backgroundElement.className = '';
+		removeAnimationClasses(backgroundElement);
 		
 		if (typeof pattern === 'string') {
 			// Regular pattern - apply as background
@@ -227,10 +233,14 @@ class ScreenTester extends React.Component {
 		
 		if (document.fullscreenElement || document.webkitFullscreenElement || 
 			document.mozFullScreenElement || document.msFullscreenElement) {
+			// Fullscreen patterns are applied to the body, so always stop the
+			// previous animation before applying the next pattern.
+			removeAnimationClasses(document.body);
+
 			if (typeof pattern === 'string') {
 				document.body.style.background = pattern;
 			} else if (pattern.type === 'animation') {
-				document.body.className = (document.body.className.replace(/\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g, '').trim() + ' ' + pattern.class).trim();
+				document.body.className = (document.body.className + ' ' + pattern.class).trim();
 				document.body.style.background = pattern.background || '';
 			}
 		}

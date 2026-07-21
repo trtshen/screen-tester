@@ -13,7 +13,7 @@ Demo: https://trtshen.github.io/screen-tester/
 - **Solid Color Tests**: Test for dead pixels, color accuracy, and uniformity
 - **Pattern Tests**: Detect display issues with gradients, lines, and geometric patterns  
 - **Motion Tests**: Check for ghosting, tearing, and refresh rate problems
-- **Flicker Tests**: Evaluate screen comfort and flicker sensitivity
+- **Flicker Tests**: Evaluate screen comfort and flicker sensitivity; moving to another pattern stops the active flicker immediately, including in fullscreen mode
 - **Interactive Controls**: Keyboard shortcuts for easy navigation
 
 ## Usage
