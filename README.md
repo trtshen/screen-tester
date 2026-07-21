@@ -27,8 +27,8 @@ Demo: https://trtshen.github.io/screen-tester/
 ## Development
 
 ```bash
-# Install dependencies
-npm install
+# Install the exact dependency versions from package-lock.json
+npm ci
 
 # Run tests
 npm test
@@ -39,6 +39,20 @@ npm run test:coverage
 # Watch mode for development
 npm run test:watch
 ```
+
+## Dependency Security
+
+Pull requests use Node.js 24 LTS, install dependencies reproducibly with `npm ci`, and fail when `npm audit` reports a high or critical vulnerability.
+
+```bash
+# Run the same dependency audit locally
+npm run security:audit
+
+# Apply compatible advisory fixes to the lockfile without running install scripts
+npm audit fix --package-lock-only --ignore-scripts
+```
+
+Review every lockfile change and rerun the audit and test suite before committing it. Do not use `npm audit fix --force` unless the resulting major-version upgrades and compatibility impact have been reviewed explicitly.
 
 ## Test Coverage
 
