@@ -40,7 +40,7 @@ The 2026-10-03 local run passed 24 tests against production components and build
 
 PR CI and Pages deployment share `.github/workflows/validate.yml`: reproducible install with scripts disabled, high/critical dependency audit, syntax checks, coverage tests, build, then optional upload of only `output/site`. Coverage summaries use thresholds from package.json and appear in the GitHub Actions job summary. This replaces the previous PR bot comments and external Codecov upload.
 
-Pages deploys on pushes to master/main, or a manual run on those branches, after validation succeeds. Only the deployment job receives Pages write and OIDC permissions. New workflows and schedules are not active until pushed to GitHub; branch protection and environment settings still need to be configured in the repository.
+Pages deploys on pushes to master/main, or a manual run on those branches, after validation succeeds. Only the deployment job receives Pages write and OIDC permissions. The validated release is deployed; see [release verification](docs/RELEASE_VERIFICATION.md). Weekly audit and Dependabot configuration are on the default branch; their first scheduled executions remain unobserved. Existing Pages environment settings permit master. Branch protection settings were left unchanged.
 
 ## Dependency security
 

@@ -1,6 +1,6 @@
 # Implementation verification
 
-Date: 2026-10-03 (Asia/Kuala_Lumpur). Branch: chaw-ai/codebase-improvements. Changes remain local and uncommitted, including the earlier dependency repair. No push, merge, publication, or GitHub settings change was performed.
+Date: 2026-10-03 (Asia/Kuala_Lumpur). Branch: chaw-ai/codebase-improvements. This report records the initial local implementation stage, including the earlier dependency repair. Publication later completed through PR #45; see RELEASE_VERIFICATION.md for hosted checks, deployment, and live evidence. No GitHub settings change was performed.
 
 ## Intended result and decisions
 
@@ -58,6 +58,6 @@ An initial server start was blocked by the sandbox's socket restriction; the aut
 
 ## Verification boundaries and next work
 
-GitHub workflows were parsed and their gate contracts tested locally; official action tag commits were checked through GitHub metadata and pinned. Actual hosted Actions, Pages environment permissions, branch protection, scheduled execution, and the deployed URL were not exercised. Those configurations become active only after changes are pushed to the relevant default branch.
+At this initial stage, GitHub workflows were parsed and gate contracts tested locally; official action tag commits were checked through GitHub metadata and pinned. Hosted Actions/Pages and the public URL were subsequently verified in RELEASE_VERIFICATION.md. Scheduled execution remains unobserved, and repository protection settings were not changed.
 
 This run does not establish physical screen calibration, refresh-rate measurement, mobile-device behavior, every browser's prefixed fullscreen implementation, or accessibility conformance across assistive technologies. Prefixed APIs and reduced-motion behavior were checked with production component tests and platform mocks. Broader device/browser validation and a separately scoped Jest major upgrade remain follow-ups.
