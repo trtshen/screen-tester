@@ -4,9 +4,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Screen Tester</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.min.js"></script>
-	<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-	<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'">
+	<script src="assets/react.production.min.js"></script>
+	<script src="assets/react-dom.production.min.js"></script>
 
 	<style>
 		body, html {
@@ -22,19 +22,16 @@
 			left: 0;
 			width: 100%;
 			height: 100%;
-			z-index: -1;
+			z-index: 0;
 		}
 
-		.test {
-		    position : absolute;
-		    width    : 200px;
-		    height   : 200px;
-		    left     : 50%;
-		    top      : 50%;
-		    margin-left : -100px;
-		    margin-top  : -100px;
-		    z-index: 1;
-		}
+		.test { position: fixed; inset: 12px 12px auto auto; max-width: min(360px, calc(100vw - 24px)); z-index: 2; }
+        .controls { background: rgba(255,255,255,0.96); color: #222; padding: 12px; border-radius: 6px; }
+        .controls p { margin: 0 0 8px; }
+        .custom-button:focus-visible { outline: 3px solid #0645ad; }
+        .controls:focus-within { opacity: 1; pointer-events: auto; }
+        .hidden-button { pointer-events: none; }
+        .stop-button { position: fixed; right: 12px; bottom: 12px; z-index: 2000; }
 
 		.custom-button { 
 			display: inline-block;
@@ -60,18 +57,6 @@
 			color: #333;
 			background-color: #e6e6e6;
 			border-color: #adadad;
-		}
-
-		:-webkit-full-screen #background {
-			background: inherit !important;
-		}
-
-		:-moz-full-screen #background {
-			background: inherit !important;
-		}
-
-		:fullscreen #background {
-			background: inherit !important;
 		}
 
 		.hidden-button {
@@ -116,26 +101,26 @@
 
 		/* Motion Test Animations */
 		@keyframes bouncing-box {
-			0% { transform: translateX(0px); }
-			25% { transform: translateX(calc(100vw - 100px)); }
-			50% { transform: translateX(calc(100vw - 100px)); }
-			75% { transform: translateX(0px); }
-			100% { transform: translateX(0px); }
+			0% { transform: translate(0px, -50%); }
+			25% { transform: translate(calc(100vw - 100px), -50%); }
+			50% { transform: translate(calc(100vw - 100px), -50%); }
+			75% { transform: translate(0px, -50%); }
+			100% { transform: translate(0px, -50%); }
 		}
 
 		@keyframes horizontal-scroll {
-			0% { background-position-x: 0%; }
-			100% { background-position-x: 100%; }
+			0% { background-position-x: 0px; }
+			100% { background-position-x: 100px; }
 		}
 
 		@keyframes vertical-scroll {
-			0% { background-position-y: 0%; }
-			100% { background-position-y: 100%; }
+			0% { background-position-y: 0px; }
+			100% { background-position-y: 50px; }
 		}
 
 		@keyframes diagonal-scroll {
-			0% { background-position: 0% 0%; }
-			100% { background-position: 100% 100%; }
+			0% { background-position: 0px 0px; }
+			100% { background-position: 56.568542px -56.568542px; }
 		}
 
 		/* Flicker Test Animations */
@@ -172,36 +157,39 @@
 
 		.scrolling-horizontal {
 			background: repeating-linear-gradient(90deg, red 0px, red 50px, blue 50px, blue 100px);
-			animation: horizontal-scroll 1s infinite linear;
+			background-size: 100px 100%;
+            animation: horizontal-scroll 1s infinite linear;
 		}
 
 		.scrolling-vertical {
 			background: repeating-linear-gradient(0deg, green 0px, green 25px, white 25px, white 50px);
-			animation: vertical-scroll 1s infinite linear;
+			background-size: 100% 50px;
+            animation: vertical-scroll 1s infinite linear;
 		}
 
 		.scrolling-diagonal {
 			background: repeating-linear-gradient(45deg, black 0px, black 10px, white 10px, white 20px);
-			animation: diagonal-scroll 2s infinite linear;
+			background-size: 56.568542px 56.568542px;
+            animation: diagonal-scroll 2s infinite linear;
 		}
 
 		/* Flicker Test Classes */
 		.flicker-slow {
-			animation: slow-flicker 1s infinite;
+			animation: slow-flicker 1s infinite steps(1, end);
 		}
 
 		.flicker-medium {
-			animation: rapid-flicker 0.5s infinite;
+			animation: rapid-flicker 0.5s infinite steps(1, end);
 		}
 
 		.flicker-fast {
-			animation: ultra-rapid-flicker 0.1s infinite;
+			animation: ultra-rapid-flicker 0.1s infinite steps(1, end);
 		}
 	</style>
 </head>
 <body>
 	<div id="background"></div>
 	<div id="content"></div>
-	<script type="text/babel" src="app.js"></script>
+	<script src="assets/app.js"></script>
 </body>
 </html>

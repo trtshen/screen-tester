@@ -1,68 +1,56 @@
-# screen-tester
+# Screen Tester
 
 [![Test Coverage](https://github.com/trtshen/screen-tester/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/trtshen/screen-tester/actions/workflows/test-coverage.yml)
 [![Deploy to GitHub Pages](https://github.com/trtshen/screen-tester/actions/workflows/deploy-page.yml/badge.svg)](https://github.com/trtshen/screen-tester/actions/workflows/deploy-page.yml)
-[![codecov](https://codecov.io/gh/trtshen/screen-tester/branch/master/graph/badge.svg)](https://codecov.io/gh/trtshen/screen-tester)
 
-Test and find out problems of your screen/monitor before it's too late (don't bring a faulty new gadget home)!
+Inspect your screen with 38 solid-color, gradient, grid, checkerboard, edge, motion, and flicker patterns. These support visual inspection, not calibrated color or refresh-rate measurements.
 
-Demo: https://trtshen.github.io/screen-tester/
+Demo: [GitHub Pages](https://trtshen.github.io/screen-tester/). Local changes reach the demo only after merging/pushing a supported default branch and successful deployment.
 
-## Features
+## Controls
 
-- **Solid Color Tests**: Test for dead pixels, color accuracy, and uniformity
-- **Pattern Tests**: Detect display issues with gradients, lines, and geometric patterns  
-- **Motion Tests**: Check for ghosting, tearing, and refresh rate problems
-- **Flicker Tests**: Evaluate screen comfort and flicker sensitivity; moving to another pattern stops the active flicker immediately, including in fullscreen mode
-- **Interactive Controls**: Keyboard shortcuts for easy navigation
+- Click the test surface or use Left/Right to navigate; buttons and editable controls do not advance the pattern accidentally.
+- F or Fullscreen toggles fullscreen. Failures appear in the control panel.
+- G/Grid and C/Crosshair toggle overlays with visible pressed state.
+- Help shows instructions and the selected pattern is labeled.
+- Flicker requires an explicit Start animation action. Reduced-motion preferences prevent automatic motion tests, with deliberate start still available.
+- Stop animation or Escape ends animation. Fullscreen exit and hiding the page also stop it; returning does not restart it automatically.
+- In fullscreen, controls fade after pointer/touch activity, but remain visible while focused, showing Help, or reporting an error. Stop animation remains visible independently.
 
-## Usage
+## Development and build
 
-- **Click** or **Arrow Keys**: Navigate between test patterns
-- **F**: Toggle fullscreen mode
-- **G**: Toggle grid overlay
-- **C**: Toggle crosshair overlay
-- **Escape**: Exit fullscreen
-
-## Development
+Use Node.js 24 LTS (minimum Node 22).
 
 ```bash
-# Install the exact dependency versions from package-lock.json
-npm ci
-
-# Run tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Watch mode for development
-npm run test:watch
+npm ci --ignore-scripts
+npm run lint
+npm test -- --runInBand --cacheDirectory .npm/jest
+npm run test:coverage -- --runInBand --cacheDirectory .npm/jest
+npm run build
+python3 -m http.server 8765 --bind 127.0.0.1 --directory output/site
 ```
 
-## Dependency Security
+Open http://127.0.0.1:8765/ after starting the server. Serve the built output, not the repository root. Watch mode: `npm run test:watch -- --cacheDirectory .npm/jest`.
 
-Pull requests use Node.js 24 LTS, install dependencies reproducibly with `npm ci`, and fail when `npm audit` reports a high or critical vulnerability.
+The small build uses installed Babel tooling to compile JSX and copies React 18's production UMD files and licenses into `output/site/assets`. It installs no additional build dependency and ships no runtime compiler or external CDN scripts. Dependency versions and integrity hashes come from package-lock.json. The site uses a Content Security Policy allowing local scripts and inline CSS needed by the patterns. `npm run lint` performs syntax checks on project scripts; JSX syntax is checked by tests/build, not by a style linter.
+
+## Validation and deployment
+
+The 2026-10-03 local run passed 24 tests against production components and build/workflow contracts. Production app.js coverage exceeds the enforced 80% minimum for lines, functions, statements, and branches. See [implementation verification](docs/IMPLEMENTATION_VERIFICATION.md) for measured coverage and browser checks.
+
+PR CI and Pages deployment share `.github/workflows/validate.yml`: reproducible install with scripts disabled, high/critical dependency audit, syntax checks, coverage tests, build, then optional upload of only `output/site`. Coverage summaries use thresholds from package.json and appear in the GitHub Actions job summary. This replaces the previous PR bot comments and external Codecov upload.
+
+Pages deploys on pushes to master/main, or a manual run on those branches, after validation succeeds. Only the deployment job receives Pages write and OIDC permissions. New workflows and schedules are not active until pushed to GitHub; branch protection and environment settings still need to be configured in the repository.
+
+## Dependency security
 
 ```bash
-# Run the same dependency audit locally
-npm run security:audit
-
-# Apply compatible advisory fixes to the lockfile without running install scripts
-npm audit fix --package-lock-only --ignore-scripts
+npm run security:audit -- --cache .npm
+npm audit fix --package-lock-only --ignore-scripts --cache .npm
 ```
 
-Review every lockfile change and rerun the audit and test suite before committing it. Do not use `npm audit fix --force` unless the resulting major-version upgrades and compatibility impact have been reviewed explicitly.
+Review the lockfile diff, reinstall reproducibly, and rerun tests/build/audit after a repair. Avoid `--force` major upgrades. The [dependency security review](docs/DEPENDENCY_SECURITY.md) records the repaired advisories. GitHub Actions also defines a weekly Monday 09:00 Malaysia time audit (01:00 UTC), and Dependabot checks npm and GitHub Actions weekly.
 
-## Test Coverage
+## Project documentation
 
-This project maintains high test coverage for core functionality:
-- **100%** line coverage
-- **100%** function coverage  
-- **100%** branch coverage
-
-Tests cover:
-- Component rendering and interaction
-- Keyboard navigation
-- Fullscreen functionality
-- Pattern cycling logic
+[AGENTS.md](AGENTS.md) describes current architecture and commands. The [improvement plan](docs/PLAN_CODE_IMPROVEMENTS.md) tracks completed work and remaining validation boundaries.

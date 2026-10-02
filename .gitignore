@@ -42,3 +42,5 @@ pids
 .Trashes
 ehthumbs.db
 Thumbs.db
+# Project build and verification artifacts
+output/
