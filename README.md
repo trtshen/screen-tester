@@ -49,7 +49,7 @@ npm run security:audit -- --cache .npm
 npm audit fix --package-lock-only --ignore-scripts --cache .npm
 ```
 
-Review the lockfile diff, reinstall reproducibly, and rerun tests/build/audit after a repair. Avoid `--force` major upgrades. The [dependency security review](docs/DEPENDENCY_SECURITY.md) records the repaired advisories. GitHub Actions also defines a weekly Monday 09:00 Malaysia time audit (01:00 UTC), and Dependabot checks npm and GitHub Actions weekly. Testing Library and official Actions updates are grouped. Babel/Jest minor and patch updates are grouped; standalone Babel major updates are deferred until a coordinated toolchain migration. See the [Dependabot PR review](docs/DEPENDENCY_PR_REVIEW.md) for compatibility decisions and tested versions.
+Review the lockfile diff, reinstall reproducibly, and rerun tests/build/audit after a repair. Avoid `--force` major upgrades. The [dependency security review](docs/DEPENDENCY_SECURITY.md) records the repaired advisories. GitHub Actions also defines a weekly Monday 09:00 Malaysia time audit (01:00 UTC), and Dependabot checks npm and GitHub Actions weekly. Testing Library and official Actions updates are grouped. Babel minor and patch updates are grouped. Jest toolchain updates are grouped across versions. React/ReactDOM updates are grouped, with major upgrades deferred until the UMD-based public build is migrated. Standalone Babel major updates remain deferred until a coordinated build/test migration. See the [Dependabot PR review](docs/DEPENDENCY_PR_REVIEW.md) for compatibility decisions and tested versions.
 
 ## Project documentation
 

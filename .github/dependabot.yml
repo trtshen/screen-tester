@@ -8,11 +8,20 @@ updates:
     groups:
       testing-library:
         patterns: ['@testing-library/*']
-      babel-jest-compatible:
-        patterns: ['@babel/*', 'babel-jest', 'jest', 'jest-environment-jsdom']
+      babel-compatible:
+        patterns: ['@babel/*']
         update-types: [minor, patch]
+      jest-toolchain:
+        patterns: ['babel-jest', 'jest', 'jest-environment-jsdom']
+      react-runtime:
+        patterns: ['react', 'react-dom']
     ignore:
-      # Babel 8 needs a coordinated ESM/Jest migration; keep routine updates on Babel 7.
+      # React 19 removes UMD builds; migrate the public build before a major upgrade.
+      - dependency-name: react
+        update-types: ['version-update:semver-major']
+      - dependency-name: react-dom
+        update-types: ['version-update:semver-major']
+      # Babel 8 needs a coordinated ESM build/test migration; keep routine updates on Babel 7.
       - dependency-name: '@babel/core'
         update-types: ['version-update:semver-major']
       - dependency-name: '@babel/preset-env'

@@ -50,3 +50,7 @@ index.html independently executes Babel 5.8.38 and React/ReactDOM @18 CDN script
 ## Follow-up implementation on 2026-10-03
 
 The browser boundary described above is historical: index.html no longer loads CDN scripts or a runtime compiler. scripts/build.js now copies installed React/ReactDOM production assets from the audited lockfile and compiles JSX with installed Babel tooling. Built HTML permits local scripts via CSP. Testing Library was updated to 15.0.7 within React 18 compatibility; no new direct dependency or build framework was introduced. All CI installs disable lifecycle scripts. Live audit, tests, and browser evidence are recorded in IMPLEMENTATION_VERIFICATION.md. Existing Jest 29 transitive deprecations remain separate from advisory findings.
+
+## Subsequent toolchain update
+
+The Jest 29 retention decision above records the initial bounded repair. The subsequent coordinated update advances Jest, babel-jest, and jest-environment-jsdom to 30.5.2 with jsdom 26.1.0, while retaining Babel 7 and React 18. See DEPENDENCY_PR_REVIEW.md for the current evaluation and verification.
