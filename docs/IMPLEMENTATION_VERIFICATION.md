@@ -61,3 +61,7 @@ An initial server start was blocked by the sandbox's socket restriction; the aut
 At this initial stage, GitHub workflows were parsed and gate contracts tested locally; official action tag commits were checked through GitHub metadata and pinned. Hosted Actions/Pages and the public URL were subsequently verified in RELEASE_VERIFICATION.md. Scheduled execution remains unobserved, and repository protection settings were not changed.
 
 This run does not establish physical screen calibration, refresh-rate measurement, mobile-device behavior, every browser's prefixed fullscreen implementation, or accessibility conformance across assistive technologies. Prefixed APIs and reduced-motion behavior were checked with production component tests and platform mocks. Broader device/browser validation and a separately scoped Jest major upgrade remain follow-ups.
+
+## Subsequent toolchain update
+
+The Jest 29 retention decision above records the initial bounded repair. The subsequent coordinated update advances Jest, babel-jest, and jest-environment-jsdom to 30.5.2 with jsdom 26.1.0, while retaining Babel 7 and React 18. See DEPENDENCY_PR_REVIEW.md for the current evaluation and verification.

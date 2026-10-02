@@ -24,11 +24,12 @@ Reviewed and implemented 2026-10-03 (Asia/Kuala_Lumpur). The user approved the s
 
 16. [x] PR #45 merged after hosted validation; Pages build and deployment succeeded. Public HTML/scripts match the reviewed build and live navigation/flicker controls passed. Existing Pages policy permits master; settings were preserved. See RELEASE_VERIFICATION.md.
 17. [ ] Test physical mobile devices, additional browsers, touch ergonomics, and display-specific performance. The local Codex browser check covers one browser/desktop environment, not physical screen calibration or real refresh-rate measurement.
-18. [ ] Consider a separately scoped coordinated Jest/babel-jest/jsdom upgrade if its benefits justify compatibility testing. Deprecated Jest 29 transitive packages remain; they are not current npm advisory findings.
+18. [x] Coordinated Jest/babel-jest/jest-environment-jsdom 30.5.2 and jsdom 26.1.0 upgrade tested with the Babel 7.29.7 preset updates. All 24 tests, coverage, audit, and build pass. See DEPENDENCY_PR_REVIEW.md. Some upstream transitive deprecation notices remain separate from advisory findings.
+21. [ ] Migrate the public UMD-based React build before a coordinated React/ReactDOM 19 upgrade. React 19 removes those artifacts; no current advisory requires this architecture change.
 
 19. [x] Reviewed the four official action updates and replaced their pinned revisions with Node 24-compatible releases. See DEPENDENCY_PR_REVIEW.md.
 20. [ ] Choose an explicit ubuntu-latest migration policy before the hosted image changes; action runtime upgrades do not settle the runner image policy.
 
 ## Next step
 
-The implementation is live and release checks passed. Continue with broader device/browser validation (17); choose a runner image policy (20) separately from the optional Jest major upgrade (18). Branch protection changes require an explicit repository-policy choice.
+The implementation is live and release checks passed. Continue with broader device/browser validation (17); choose a runner image policy (20) separately from the React build migration (21). Branch protection changes require an explicit repository-policy choice.

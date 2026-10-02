@@ -45,3 +45,27 @@ A clean npm ci --ignore-scripts install and npm audit both report zero vulnerabi
 [Combined PR #56](https://github.com/trtshen/screen-tester/pull/56) merged after successful hosted validation. Pages upload/deployment passed on merge revision 2540012eb2301d1cfae70e3f93c69db0084db02c. Public HTML and three scripts returned HTTP 200 and matched the local build bytes. All ten original proposals are closed: seven implemented through #56, #44 superseded by patched browserslist 4.29.3, and #52/#53 deferred because of incompatible peers. See RELEASE_VERIFICATION.md for run identities.
 
 Remaining boundary: ubuntu-latest image migration and a coordinated Jest/Babel major upgrade are separate maintenance decisions. Physical device/browser validation remains outstanding from the original improvement plan.
+
+## Remaining five proposals: coordinated Jest 30 update
+
+The second screenshot contains #57-#61. The first review above records the earlier release; the toolchain now advances from Jest 29 to Jest 30.
+
+| PR | Proposal | Decision |
+| --- | --- | --- |
+| #57 | Babel preset-env and preset-react 7.29.7 | Accept together, retaining Babel core 7.29.7. |
+| #58 | React 19.3.0 alone | Defer as incompatible with ReactDOM 18 and the existing UMD-based public build. |
+| #59 | babel-jest 30.5.2 | Accept with Jest and its environment. |
+| #60 | jest-environment-jsdom 30.5.2 | Accept with Jest; upgrades jsdom to 26.1.0. |
+| #61 | Jest 30.5.2 | Accept as a coordinated toolchain update. |
+
+The #58 install log reports ERESOLVE: ReactDOM 18.3.1 requires React ^18.3.1, but the proposal installs React 19.3.0. Updating both packages would still break scripts/build.js, which copies their UMD production artifacts. The [React 19 migration guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide) documents removal of UMD builds and the modern JSX transform requirement. Retain React/ReactDOM 18.3.1 until a separately reviewed build migration. Routine React major updates are ignored, and compatible React/ReactDOM updates are grouped.
+
+The [Jest 30 migration guide](https://jestjs.io/docs/upgrading-to-jest30) documents the jsdom 26 change, removed matcher aliases, and environment requirements. The existing assertions and platform mocks pass under the coordinated upgrade without application or test behavior changes. Babel-jest 30 accepts installed Babel 7.29.7. Jest packages now form their own Dependabot group across update types, preventing the three separate major proposals from recurring. Babel minor/patch updates retain their own group and Babel major updates remain deferred.
+
+Risk: this upgrade changes a substantial transitive test-tooling graph, including DOM emulation and Babel plugins. Transitive dependencies can execute code, access environment variables, or use process/network APIs during tests; lifecycle scripts remain disabled during installs. Changed packages declare two install hooks: @parcel/watcher 2.6.0 can spawn node-gyp through a shell when npm_config_build_from_source is enabled; unrs-resolver 1.12.2 delegates postinstall native-binary preparation to napi-postinstall. These hooks were not executed. Normal installed platform binaries worked in local tests; hosted CI must verify Linux separately.
+
+Reason: the existing Jest packages are upgraded together rather than introducing a new test framework. jsdom 26 changes DOM behavior, so the complete production suite and build/workflow contracts were rerun.
+
+Safer alternative: retain the audited React runtime and Babel major, use lockfile integrity hashes and scripts-disabled reproducible installs, and gate publication on full tests, audit, build, and fresh hosted CI. No new direct package or build framework is added.
+
+Clean scripts-disabled reinstall and combined validation passed all 24 tests with unchanged coverage (98.49% statements, 98.03% branches, 94.44% functions, 97.97% lines), syntax checks, production build, and zero audit vulnerabilities. No test weakening or forced peer resolution was needed. Final clean-install and hosted release results are recorded separately.
