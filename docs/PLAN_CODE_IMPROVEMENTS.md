@@ -26,8 +26,9 @@ Reviewed and implemented 2026-10-03 (Asia/Kuala_Lumpur). The user approved the s
 17. [ ] Test physical mobile devices, additional browsers, touch ergonomics, and display-specific performance. The local Codex browser check covers one browser/desktop environment, not physical screen calibration or real refresh-rate measurement.
 18. [ ] Consider a separately scoped coordinated Jest/babel-jest/jsdom upgrade if its benefits justify compatibility testing. Deprecated Jest 29 transitive packages remain; they are not current npm advisory findings.
 
-19. [ ] Review pinned action runtime upgrades and the ubuntu-latest migration policy. Hosted jobs pass, but action Node 20 metadata is deprecated and forced to Node 24; see RELEASE_VERIFICATION.md.
+19. [x] Reviewed the four official action updates and replaced their pinned revisions with Node 24-compatible releases. See DEPENDENCY_PR_REVIEW.md.
+20. [ ] Choose an explicit ubuntu-latest migration policy before the hosted image changes; action runtime upgrades do not settle the runner image policy.
 
 ## Next step
 
-The implementation is live and release checks passed. Continue with broader device/browser validation (17); schedule action/runner maintenance (19) separately from the optional Jest major upgrade (18). Branch protection changes require an explicit repository-policy choice.
+The implementation is live and release checks passed. Continue with broader device/browser validation (17); choose a runner image policy (20) separately from the optional Jest major upgrade (18). Branch protection changes require an explicit repository-policy choice.

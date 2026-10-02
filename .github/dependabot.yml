@@ -5,8 +5,25 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      testing-library:
+        patterns: ['@testing-library/*']
+      babel-jest-compatible:
+        patterns: ['@babel/*', 'babel-jest', 'jest', 'jest-environment-jsdom']
+        update-types: [minor, patch]
+    ignore:
+      # Babel 8 needs a coordinated ESM/Jest migration; keep routine updates on Babel 7.
+      - dependency-name: '@babel/core'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@babel/preset-env'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@babel/preset-react'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      official-actions:
+        patterns: ['actions/*']

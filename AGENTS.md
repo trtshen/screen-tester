@@ -4,7 +4,7 @@ Follow the user's global working rules. Keep task files inside this repository, 
 
 ## Stack and architecture
 
-Screen Tester is a static webapp with 38 visual inspection patterns, no backend, and no persistence. It retains React 18 class components. npm supplies React/ReactDOM 18.3.1, Babel 7, Jest/babel-jest/jest-environment-jsdom 29.7.0, jsdom 20, and Testing Library React 15. Node 24 is used in CI; Node >=22 is required.
+Screen Tester is a static webapp with 38 visual inspection patterns, no backend, and no persistence. It retains React 18 class components. npm supplies React/ReactDOM 18.3.1, Babel 7, Jest/babel-jest/jest-environment-jsdom 29.7.0, jsdom 20, and Testing Library React 16 with DOM 10 and jest-dom 7. Node 24 is used in CI; Node >=22 is required.
 
 app.js holds immutable pattern definitions with stable IDs and labels outside component state. ScreenTester owns navigation, fullscreen state, overlays, explicit animation start/stop, and control visibility. State updater functions do not write to the DOM. componentDidUpdate applies committed pattern changes to #background. Body owns grid/crosshair overlays only; do not duplicate animation classes onto body because their pseudo-elements can collide. Fullscreen events and keyboard/button actions share the same helper. Fullscreen exit, page hiding, and reduced-motion activation stop animations; stopped effects need deliberate restart.
 
@@ -24,6 +24,7 @@ app.js holds immutable pattern definitions with stable IDs and labels outside co
 - docs/PLAN_CODE_IMPROVEMENTS.md: living implementation status and remaining follow-ups.
 - docs/IMPLEMENTATION_VERIFICATION.md: local/browser evidence and decisions.
 - docs/DEPENDENCY_SECURITY.md: initial repair and subsequent runtime boundary changes.
+- docs/DEPENDENCY_PR_REVIEW.md: reviewed Dependabot updates, compatibility decisions, and verification.
 - docs/RELEASE_VERIFICATION.md: merged PR, hosted CI/deployment identities, and public-site evidence.
 
 ## Commands and conventions
