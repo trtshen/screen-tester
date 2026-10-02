@@ -42,3 +42,17 @@ Clean local reinstall and hosted validation reported zero audit vulnerabilities 
 All ten screenshot PRs (#44 and #46-#54) are closed. Seven proposals are implemented by the combined release; browserslist #44 is superseded by existing patched 4.29.3; Babel 8 #52/#53 are deferred because their peers conflict with the current Babel 7/Jest 29 toolchain. The new Dependabot policy closed the two Babel proposals automatically. The remaining superseded proposals were closed after successful deployment. See DEPENDENCY_PR_REVIEW.md for the full evaluation.
 
 The old Action Node 20 runtime notices no longer appear in this deployment. The remaining notice announces ubuntu-latest migration to Ubuntu 26 beginning October 19, 2026. Runner image policy remains a separate follow-up. Current open dependency alerts were empty after closure. Dependabot subsequently opened new proposals #57 (grouped Babel/Jest updates) and #58 (React 19); these were not in the reviewed screenshot and remain separate follow-ups.
+
+## Coordinated Jest 30 release
+
+- [PR #63](https://github.com/trtshen/screen-tester/pull/63) merged the grouped Babel 7 preset update and three coordinated Jest 30 updates.
+- Reviewed feature commit: eef807899cc2bc674f6d40bd20c4a37929262849.
+- Release merge commit: aa5cea148c46c83784dd13158c877d73d526b6b7.
+- [PR validation](https://github.com/trtshen/screen-tester/actions/runs/37065671485) passed on the reviewed feature revision.
+- [Pages validation and deployment](https://github.com/trtshen/screen-tester/actions/runs/37065776160) passed on the merge revision.
+
+Clean local and hosted installs kept lifecycle scripts disabled, with zero audit findings. All 24 production/build/workflow tests passed unchanged with the same enforced coverage under Jest 30.5.2/jsdom 26.1.0. Syntax/build checks passed. Public HTML and all three scripts returned HTTP 200 and matched the tested output/site bytes after deployment.
+
+The second screenshot's five proposals #57-#61 are closed. #57 and #59-#61 are implemented by #63; #58 is deferred because React 19 alone conflicts with ReactDOM 18 and React 19 removes UMD artifacts required by the current build. Dependabot closed #57/#58 automatically after the update; the three superseded Jest proposals were closed after deployment. No open PRs or dependency alerts remained at the final check.
+
+Current maintenance boundaries are the React UMD build migration, Babel 8 build/test migration, Ubuntu runner image policy, and broader physical-device/browser validation. Routine React/Babel major proposals are deferred while audits remain enabled; compatible React pairs and coordinated Jest packages are grouped.
