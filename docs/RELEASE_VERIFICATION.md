@@ -25,6 +25,20 @@ The existing Pages environment uses workflow deployment and permits master. Its 
 
 An initial merge attempt was rejected by automatic approval review because previously fetched PR metadata still showed validation in progress. A fresh authoritative read confirmed COMPLETED/SUCCESS validation and CLEAN/MERGEABLE state for the exact reviewed head commit. The subsequent approved merge succeeded. No rejection was bypassed.
 
-The weekly audit and Dependabot configuration are now on the default branch. Their first scheduled executions were not observed during this release. Current CI jobs succeed but emit notices that pinned action versions use deprecated Node 20 metadata and are forced onto Node 24; upload-pages-artifact also invokes upload-artifact internally. The ubuntu-latest migration notice is another maintenance follow-up. Review current official action releases and the runner-image policy in a separate change rather than mixing an unvalidated major-action upgrade into this completed release.
+The weekly audit and Dependabot configuration are now on the default branch. Their first scheduled executions were not observed during this release. At the original PR #45 release, CI jobs succeeded but emitted notices that pinned action versions use deprecated Node 20 metadata and are forced onto Node 24; upload-pages-artifact also invokes upload-artifact internally. The ubuntu-latest migration notice is another maintenance follow-up. The dependency proposal release below resolves the action runtime notices; runner-image policy remains a separate follow-up.
 
 Physical mobile devices, additional browsers/assistive technologies, display calibration, and a coordinated Jest major upgrade remain follow-ups. Local master was fast-forwarded to the published implementation before recording this documentation.
+
+## Dependency proposal release
+
+- [PR #56](https://github.com/trtshen/screen-tester/pull/56) merged the seven compatible dependency/action proposals.
+- Reviewed feature commit: 84157795bc264ac12d9c18bbaf6f43ee60f29c01.
+- Release merge commit: 2540012eb2301d1cfae70e3f93c69db0084db02c.
+- [PR validation](https://github.com/trtshen/screen-tester/actions/runs/37064561822) completed successfully on the exact reviewed feature commit.
+- [Pages validation and deployment](https://github.com/trtshen/screen-tester/actions/runs/37064636181) completed successfully on the release merge commit, including the new upload/deploy Actions.
+
+Clean local reinstall and hosted validation reported zero audit vulnerabilities and all 24 tests passed with coverage enforcement. Public index.html and all three local scripts returned HTTP 200 and matched output/site bytes after deployment. The application output is unchanged by these tooling updates.
+
+All ten screenshot PRs (#44 and #46-#54) are closed. Seven proposals are implemented by the combined release; browserslist #44 is superseded by existing patched 4.29.3; Babel 8 #52/#53 are deferred because their peers conflict with the current Babel 7/Jest 29 toolchain. The new Dependabot policy closed the two Babel proposals automatically. The remaining superseded proposals were closed after successful deployment. See DEPENDENCY_PR_REVIEW.md for the full evaluation.
+
+The old Action Node 20 runtime notices no longer appear in this deployment. The remaining notice announces ubuntu-latest migration to Ubuntu 26 beginning October 19, 2026. Runner image policy remains a separate follow-up. Current open dependency alerts were empty after closure. Dependabot subsequently opened new proposals #57 (grouped Babel/Jest updates) and #58 (React 19); these were not in the reviewed screenshot and remain separate follow-ups.
