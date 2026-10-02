@@ -24,6 +24,7 @@ app.js holds immutable pattern definitions with stable IDs and labels outside co
 - docs/PLAN_CODE_IMPROVEMENTS.md: living implementation status and remaining follow-ups.
 - docs/IMPLEMENTATION_VERIFICATION.md: local/browser evidence and decisions.
 - docs/DEPENDENCY_SECURITY.md: initial repair and subsequent runtime boundary changes.
+- docs/RELEASE_VERIFICATION.md: merged PR, hosted CI/deployment identities, and public-site evidence.
 
 ## Commands and conventions
 

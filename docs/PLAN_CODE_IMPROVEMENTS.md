@@ -22,10 +22,12 @@ Reviewed and implemented 2026-10-03 (Asia/Kuala_Lumpur). The user approved the s
 
 ## Remaining follow-ups
 
-16. [ ] Push/review/merge, then observe actual GitHub Actions and Pages execution. Configure branch protection and the Pages environment in GitHub as appropriate. Local workflow contracts do not prove hosted execution, token/environment settings, or successful deployment.
+16. [x] PR #45 merged after hosted validation; Pages build and deployment succeeded. Public HTML/scripts match the reviewed build and live navigation/flicker controls passed. Existing Pages policy permits master; settings were preserved. See RELEASE_VERIFICATION.md.
 17. [ ] Test physical mobile devices, additional browsers, touch ergonomics, and display-specific performance. The local Codex browser check covers one browser/desktop environment, not physical screen calibration or real refresh-rate measurement.
 18. [ ] Consider a separately scoped coordinated Jest/babel-jest/jsdom upgrade if its benefits justify compatibility testing. Deprecated Jest 29 transitive packages remain; they are not current npm advisory findings.
 
+19. [ ] Review pinned action runtime upgrades and the ubuntu-latest migration policy. Hosted jobs pass, but action Node 20 metadata is deprecated and forced to Node 24; see RELEASE_VERIFICATION.md.
+
 ## Next step
 
-Review the uncommitted branch and run the documented install/test/audit/build checks in GitHub. Complete deployment and device validation before claiming a live release or device-wide reliability.
+The implementation is live and release checks passed. Continue with broader device/browser validation (17); schedule action/runner maintenance (19) separately from the optional Jest major upgrade (18). Branch protection changes require an explicit repository-policy choice.
