@@ -1,125 +1,37 @@
-const ANIMATION_CLASS_PATTERN = /\b(bouncing-box|scrolling-horizontal|scrolling-vertical|scrolling-diagonal|flicker-slow|flicker-medium|flicker-fast)\b/g;
-
-function removeAnimationClasses(element) {
-	element.className = element.className.replace(ANIMATION_CLASS_PATTERN, '').trim();
-}
-
-class ToggleFullScreen extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isFullScreen: false,
-			buttonVisible: true
-		};
-		this.hideTimer = null;
-		// Bind methods
-		this.onFullScreenChange = this.onFullScreenChange.bind(this);
-		this.showButton = this.showButton.bind(this);
-		this.toggleScreen = this.toggleScreen.bind(this);
-	}
-	
-	componentDidMount() {
-		document.addEventListener('fullscreenchange', this.onFullScreenChange);
-		document.addEventListener('webkitfullscreenchange', this.onFullScreenChange);
-		document.addEventListener('mozfullscreenchange', this.onFullScreenChange);
-		document.addEventListener('MSFullscreenChange', this.onFullScreenChange);
-		
-		document.addEventListener('mousemove', this.showButton);
-		document.addEventListener('touchstart', this.showButton);
-	}
-	
-	componentWillUnmount() {
-		document.removeEventListener('fullscreenchange', this.onFullScreenChange);
-		document.removeEventListener('webkitfullscreenchange', this.onFullScreenChange);
-		document.removeEventListener('mozfullscreenchange', this.onFullScreenChange);
-		document.removeEventListener('MSFullscreenChange', this.onFullScreenChange);
-		
-		document.removeEventListener('mousemove', this.showButton);
-		document.removeEventListener('touchstart', this.showButton);
-		
-		if (this.hideTimer) {
-			clearTimeout(this.hideTimer);
-		}
-	}
-	
-	onFullScreenChange() {
-		const isFullScreen = !!(
-			document.fullscreenElement ||
-			document.mozFullScreenElement ||
-			document.webkitFullscreenElement ||
-			document.msFullscreenElement
-		);
-		
-		if (!isFullScreen) {
-			document.body.style.background = '';
-			removeAnimationClasses(document.body);
-		}
-		
-		this.setState({
-			isFullScreen: isFullScreen,
-			buttonVisible: !isFullScreen ? true : this.state.buttonVisible
-		});
-	}
-	
-	showButton() {
-		if (!this.state.isFullScreen) return;
-		
-		this.setState({ buttonVisible: true });
-		
-		if (this.hideTimer) {
-			clearTimeout(this.hideTimer);
-		}
-		
-		this.hideTimer = setTimeout(() => {
-			this.setState({ buttonVisible: false });
-		}, 500);
-	}
-	
-	toggleScreen() {
-		const elem = document.documentElement;
-
-		if (!document.fullscreenElement &&
-		    !document.mozFullScreenElement &&
-	      	!document.webkitFullscreenElement &&
-	      	!document.msFullscreenElement) {
-
-			if (elem.requestFullscreen) {
-				elem.requestFullscreen();
-			} else if (elem.mozRequestFullScreen) {
-				elem.mozRequestFullScreen();
-			} else if (elem.webkitRequestFullscreen) {
-				elem.webkitRequestFullscreen();
-			} else if (elem.msRequestFullscreen) {
-				elem.msRequestFullscreen();
-			}
-      	} else {
-		    if (document.exitFullscreen) {
-		      document.exitFullscreen();
-		    } else if (document.msExitFullscreen) {
-		      document.msExitFullscreen();
-		    } else if (document.mozCancelFullScreen) {
-		      document.mozCancelFullScreen();
-		    } else if (document.webkitExitFullscreen) {
-		      document.webkitExitFullscreen();
-		    }
-      	}
-	}
-
-	render() {
-		const buttonClass = "custom-button " + 
-			(this.state.isFullScreen && !this.state.buttonVisible ? "hidden-button" : "visible-button");
-		
-		return (
-			<button className={buttonClass} onClick={this.toggleScreen}>Toggle Full Screen</button>
-		);
-	}
-}
-
-class ScreenTester extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			patterns: [
+const STATIC_METADATA = [
+  {"id": "red", "name": "Red"},
+  {"id": "green", "name": "Green"},
+  {"id": "blue", "name": "Blue"},
+  {"id": "yellow", "name": "Yellow"},
+  {"id": "magenta", "name": "Magenta"},
+  {"id": "cyan", "name": "Cyan"},
+  {"id": "black", "name": "Black"},
+  {"id": "white", "name": "White"},
+  {"id": "light-grey", "name": "Light grey"},
+  {"id": "mid-grey", "name": "Mid grey"},
+  {"id": "dark-grey", "name": "Dark grey"},
+  {"id": "red-to-blue", "name": "Red to blue"},
+  {"id": "green-to-yellow", "name": "Green to yellow"},
+  {"id": "purple-to-orange", "name": "Purple to orange"},
+  {"id": "black-to-white", "name": "Black to white"},
+  {"id": "radial-colors", "name": "Radial colors"},
+  {"id": "radial-greyscale", "name": "Radial greyscale"},
+  {"id": "vertical-color-stripes", "name": "Vertical color stripes"},
+  {"id": "horizontal-color-stripes", "name": "Horizontal color stripes"},
+  {"id": "diagonal-stripes", "name": "Diagonal stripes"},
+  {"id": "fine-diagonal-stripes", "name": "Fine diagonal stripes"},
+  {"id": "large-grid", "name": "Large grid"},
+  {"id": "fine-grid", "name": "Fine grid"},
+  {"id": "checkerboard", "name": "Checkerboard"},
+  {"id": "fine-checkerboard", "name": "Fine checkerboard"},
+  {"id": "greyscale-steps", "name": "Greyscale steps"},
+  {"id": "color-bars", "name": "Color bars"},
+  {"id": "vertical-one-pixel-lines", "name": "Vertical one-pixel lines"},
+  {"id": "horizontal-one-pixel-lines", "name": "Horizontal one-pixel lines"},
+  {"id": "light-frame", "name": "Light frame"},
+  {"id": "dark-frame", "name": "Dark frame"}
+];
+const PATTERNS = [
 				// Solid colors
 				'rgb(255,0,0)', // Red
 				'rgb(0,255,0)', // Green
@@ -155,9 +67,9 @@ class ScreenTester extends React.Component {
 				'repeating-linear-gradient(0deg, #ccc, #ccc 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, #ccc, #ccc 1px, transparent 1px, transparent 20px)',
 				
 				// Checkerboard pattern (using linear gradients for better compatibility)
-				'repeating-linear-gradient(0deg, black 0px, black 25px, white 25px, white 50px), repeating-linear-gradient(90deg, black 0px, black 25px, transparent 25px, transparent 50px)',
+				'conic-gradient(black 25%, white 0 50%, black 0 75%, white 0) 0 0 / 50px 50px',
 				// Finer checkerboard
-				'repeating-linear-gradient(45deg, #000 0, #000 5px, #fff 5px, #fff 10px), repeating-linear-gradient(-45deg, #000 0, #000 5px, #fff 5px, #fff 10px)',
+				'conic-gradient(black 25%, white 0 50%, black 0 75%, white 0) 0 0 / 10px 10px',
 
 				// Color transition tests
 				'linear-gradient(to right, #000000, #111111, #222222, #333333, #444444, #555555, #666666, #777777, #888888, #999999, #aaaaaa, #bbbbbb, #cccccc, #dddddd, #eeeeee, #ffffff)',
@@ -186,131 +98,150 @@ class ScreenTester extends React.Component {
 				{ type: 'animation', class: 'flicker-slow', name: 'Slow Flicker Test (1Hz)' },
 				{ type: 'animation', class: 'flicker-medium', name: 'Medium Flicker Test (2Hz)' },
 				{ type: 'animation', class: 'flicker-fast', name: 'Fast Flicker Test (10Hz)' }
-			],
-			patternIndex: 0
-		};
-		// Bind methods
-		this.handleClick = this.handleClick.bind(this);
-		this.changeColour = this.changeColour.bind(this);
-		this.nextPattern = this.nextPattern.bind(this);
-		this.prevPattern = this.prevPattern.bind(this);
-		this.handleKeyDown = this.handleKeyDown.bind(this);
-		this.applyPattern = this.applyPattern.bind(this);
-	}
-
-    componentDidMount() {
-        document.documentElement.addEventListener('click', this.handleClick);
-        document.addEventListener('keydown', this.handleKeyDown);
-    }
-
-    componentWillUnmount() {
-        document.documentElement.removeEventListener('click', this.handleClick);
-        document.removeEventListener('keydown', this.handleKeyDown);
-    }
-	
-	handleClick(event) {
-		// Check if the click target is the button or inside the button's container
-		if (event.target.closest('.custom-button')) {
-			return; 
-		}
-		this.changeColour();
-	}
-
-	applyPattern(pattern) {
-		const backgroundElement = document.getElementById('background');
-		
-		// Clear any existing animation classes
-		removeAnimationClasses(backgroundElement);
-		
-		if (typeof pattern === 'string') {
-			// Regular pattern - apply as background
-			backgroundElement.style.background = pattern;
-		} else if (pattern.type === 'animation') {
-			// Animation pattern - apply class and background if specified
-			backgroundElement.className = pattern.class;
-			backgroundElement.style.background = pattern.background || '';
-		}
-		
-		if (document.fullscreenElement || document.webkitFullscreenElement || 
-			document.mozFullScreenElement || document.msFullscreenElement) {
-			// Fullscreen patterns are applied to the body, so always stop the
-			// previous animation before applying the next pattern.
-			removeAnimationClasses(document.body);
-
-			if (typeof pattern === 'string') {
-				document.body.style.background = pattern;
-			} else if (pattern.type === 'animation') {
-				document.body.className = (document.body.className + ' ' + pattern.class).trim();
-				document.body.style.background = pattern.background || '';
-			}
-		}
-	}
-
-	changeColour() {
-		// Use functional setState to ensure patternIndex is updated based on the previous state
-		this.setState(prevState => {
-			const nextIndex = (prevState.patternIndex + 1) % prevState.patterns.length;
-			const pattern = prevState.patterns[nextIndex];
-			
-			this.applyPattern(pattern);
-			
-			return { patternIndex: nextIndex };
-		});
-	}
-
-	nextPattern() {
-		this.changeColour();
-	}
-
-	prevPattern() {
-		this.setState(prevState => {
-			const prevIndex = (prevState.patternIndex - 1 + prevState.patterns.length) % prevState.patterns.length;
-			const pattern = prevState.patterns[prevIndex];
-			
-			this.applyPattern(pattern);
-			
-			return { patternIndex: prevIndex };
-		});
-	}
-
-	handleKeyDown(e) {
-		switch (e.key) {
-			case "f":
-			case "F":
-				document.fullscreenElement
-					? document.exitFullscreen()
-					: document.documentElement.requestFullscreen();
-				break;
-			case "ArrowRight":
-				this.nextPattern();
-				break;
-			case "ArrowLeft":
-				this.prevPattern();
-				break;
-			case "g":
-			case "G":
-				document.body.classList.toggle("show-grid");
-				break;
-			case "c":
-			case "C":
-				document.body.classList.toggle("show-crosshair");
-				break;
-			case "Escape":
-				if (document.fullscreenElement) document.exitFullscreen();
-				break;
-		}
-	}
-
-	render() {
-	    return (
-	    	<div className="test">
-		    	<ToggleFullScreen />
-	    	</div>
-	    );
-	}
+			].map((pattern, index) => {
+  const value = typeof pattern === 'string' ? { background: pattern, ...STATIC_METADATA[index], type: 'static' } : pattern;
+  return Object.freeze({ ...value, id: value.id || value.class, flicker: !!value.class && value.class.startsWith('flicker-') });
+});
+Object.freeze(PATTERNS);
+const FULLSCREEN_EVENTS = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'];
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+}
+function clearPattern(element) {
+  for (const pattern of PATTERNS) if (pattern.class) element.classList.remove(pattern.class);
+  element.style.background = '';
+}
+async function toggleFullscreen(exitOnly = false) {
+  const exiting = isFullscreen();
+  if (exitOnly && !exiting) return;
+  const target = exiting ? document : document.documentElement;
+  const method = exiting
+    ? (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen)
+    : (target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen);
+  if (!method) throw new Error('Fullscreen is unavailable in this browser.');
+  await method.call(target);
 }
 
-// Updated rendering for React 18
+class ScreenTester extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { patternIndex: 0, running: false, fullscreen: isFullscreen(), grid: false, crosshair: false, controlsVisible: true, help: false, error: '' };
+    this.hideTimer = null;
+    this.motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.onClick = this.onClick.bind(this);
+    this.onKey = this.onKey.bind(this);
+    this.onFullscreen = this.onFullscreen.bind(this);
+    this.onVisibility = this.onVisibility.bind(this);
+    this.showControls = this.showControls.bind(this);
+    this.onMotionPreference = this.onMotionPreference.bind(this);
+  }
+  componentDidMount() {
+    this.applyPattern();
+    document.addEventListener('click', this.onClick);
+    document.addEventListener('keydown', this.onKey);
+    document.addEventListener('visibilitychange', this.onVisibility);
+    document.addEventListener('mousemove', this.showControls);
+    document.addEventListener('touchstart', this.showControls);
+    FULLSCREEN_EVENTS.forEach(event => document.addEventListener(event, this.onFullscreen));
+    if (this.motionQuery.addEventListener) this.motionQuery.addEventListener('change', this.onMotionPreference);
+    else this.motionQuery.addListener(this.onMotionPreference);
+  }
+  componentDidUpdate(prevProps, previous) {
+    if (previous.patternIndex !== this.state.patternIndex || previous.running !== this.state.running || previous.fullscreen !== this.state.fullscreen) this.applyPattern();
+    document.body.classList.toggle('show-grid', this.state.grid);
+    document.body.classList.toggle('show-crosshair', this.state.crosshair);
+  }
+  componentWillUnmount() {
+    clearTimeout(this.hideTimer);
+    document.removeEventListener('click', this.onClick);
+    document.removeEventListener('keydown', this.onKey);
+    document.removeEventListener('visibilitychange', this.onVisibility);
+    document.removeEventListener('mousemove', this.showControls);
+    document.removeEventListener('touchstart', this.showControls);
+    FULLSCREEN_EVENTS.forEach(event => document.removeEventListener(event, this.onFullscreen));
+    if (this.motionQuery.removeEventListener) this.motionQuery.removeEventListener('change', this.onMotionPreference);
+    else this.motionQuery.removeListener(this.onMotionPreference);
+    clearPattern(document.getElementById('background'));
+    clearPattern(document.body);
+    document.body.classList.remove('show-grid', 'show-crosshair');
+  }
+  selected() { return PATTERNS[this.state.patternIndex]; }
+  applyPattern() {
+    const background = document.getElementById('background');
+    clearPattern(background);
+    clearPattern(document.body);
+    const pattern = this.selected();
+    for (const element of [background]) {
+      element.style.background = pattern.background || (pattern.flicker ? 'black' : '');
+      if (pattern.class && this.state.running) element.classList.add(pattern.class);
+    }
+  }
+  navigate(delta) {
+    this.setState(previous => {
+      const patternIndex = (previous.patternIndex + delta + PATTERNS.length) % PATTERNS.length;
+      const pattern = PATTERNS[patternIndex];
+      return { patternIndex, running: pattern.type === 'animation' && !pattern.flicker && !this.motionQuery.matches && !document.hidden, error: '' };
+    });
+  }
+  onClick(event) {
+    if (event.target.closest('button, input, select, textarea, a, [contenteditable], .controls')) return;
+    this.navigate(1);
+  }
+  onKey(event) {
+    if (event.target.closest && event.target.closest('input, select, textarea, [contenteditable]')) return;
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    switch (event.key.toLowerCase()) {
+      case 'arrowright': event.preventDefault(); this.navigate(1); break;
+      case 'arrowleft': event.preventDefault(); this.navigate(-1); break;
+      case 'f': event.preventDefault(); this.fullscreen(); break;
+      case 'g': event.preventDefault(); this.toggleOverlay('grid'); break;
+      case 'c': event.preventDefault(); this.toggleOverlay('crosshair'); break;
+      case 'escape': this.stop(); this.fullscreen(true); break;
+      default: break;
+    }
+  }
+  toggleOverlay(name) { this.setState(previous => ({ [name]: !previous[name] })); }
+  async fullscreen(exitOnly = false) {
+    try { await toggleFullscreen(exitOnly); }
+    catch (error) { this.setState({error: error.message, controlsVisible: true}); }
+  }
+  onFullscreen() {
+    clearTimeout(this.hideTimer);
+    const fullscreen = isFullscreen();
+    this.setState(previous => ({ fullscreen, controlsVisible: true, running: fullscreen ? previous.running : false }));
+  }
+  stop() { this.setState({ running: false, controlsVisible: true }); }
+  onVisibility() { if (document.hidden) this.stop(); }
+  onMotionPreference(event) { if (event.matches) this.stop(); }
+  showControls() {
+    clearTimeout(this.hideTimer);
+    this.setState({controlsVisible: true});
+    if (this.state.fullscreen) this.hideTimer = setTimeout(() => {
+      if (this.state.fullscreen && !document.activeElement.closest('.controls') && !this.state.help && !this.state.error) this.setState({controlsVisible: false});
+    }, 1500);
+  }
+  render() {
+    const pattern = this.selected();
+    return <div className="test" data-pattern={pattern.id}>
+      <div className={'controls ' + (this.state.controlsVisible ? 'visible-button' : 'hidden-button')} onFocus={this.showControls}>
+        <p aria-live="polite">{pattern.name} ({this.state.patternIndex + 1}/{PATTERNS.length})</p>
+        <button className="custom-button" onClick={() => this.navigate(-1)}>Previous</button>
+        <button className="custom-button" onClick={() => this.navigate(1)}>Next</button>
+        <button className="custom-button" onClick={() => this.fullscreen()}>{this.state.fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
+        <button className="custom-button" aria-pressed={this.state.grid} onClick={() => this.toggleOverlay('grid')}>Grid</button>
+        <button className="custom-button" aria-pressed={this.state.crosshair} onClick={() => this.toggleOverlay('crosshair')}>Crosshair</button>
+        <button className="custom-button" aria-expanded={this.state.help} aria-controls="help" onClick={() => this.setState(previous => ({help: !previous.help}))}>Help</button>
+        {pattern.type === 'animation' && !this.state.running && <div>
+          {pattern.flicker && <p>This test flashes rapidly. Start only when you are ready. Stop or Escape ends it.</p>}
+          <button className="custom-button" onClick={() => { if (!document.hidden) this.setState({running: true}); }}>Start animation</button>
+        </div>}
+        {this.state.help && <p id="help">Click the test surface or use Left/Right to navigate. F: fullscreen. G: grid. C: crosshair. Escape: stop animation and exit fullscreen. These patterns support visual inspection, not calibrated measurements.</p>}
+        {this.state.error && <p role="alert">{this.state.error}</p>}
+      </div>
+      {this.state.running && <button className="custom-button stop-button" onClick={() => this.stop()}>Stop animation</button>}
+    </div>;
+  }
+}
 const container = document.getElementById('content');
 const root = ReactDOM.createRoot(container);
 root.render(<ScreenTester />);

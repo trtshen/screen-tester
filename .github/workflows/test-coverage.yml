@@ -1,104 +1,10 @@
 name: Test Coverage
-
 on:
   pull_request:
-    branches: [ master, main ]
-    types: [ opened, synchronize, reopened ]
-
+    branches: [master, main]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
 jobs:
   test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '24'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Audit dependencies
-      run: npm run security:audit
-      
-    - name: Run tests with coverage
-      run: npm run test:coverage
-      
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-
-    - name: Format coverage report
-      id: coverage_report
-      run: |
-        if [ -f ./coverage/lcov.info ]; then
-          TOTAL_LINES=$(grep -Po '^LF:\K\d+' ./coverage/lcov.info | awk '{s+=$1} END {print s}')
-          COVERED_LINES=$(grep -Po '^LH:\K\d+' ./coverage/lcov.info | awk '{s+=$1} END {print s}')
-          TOTAL_FUNCS=$(grep -Po '^FNF:\K\d+' ./coverage/lcov.info | awk '{s+=$1} END {print s}')
-          COVERED_FUNCS=$(grep -Po '^FNH:\K\d+' ./coverage/lcov.info | awk '{s+=$1} END {print s}')
-          TOTAL_BRANCHES=$(grep -Po '^BRF:\K\d+' ./coverage/lcov.info | awk '{s+=$1} END {print s}')
-          COVERED_BRANCHES=$(grep -Po '^BRH:\K\d+' ./coverage/lcov.info | awk '{s+=$1} END {print s}')
-          LINE_PERCENT=0
-          FUNC_PERCENT=0
-          BRANCH_PERCENT=0
-          if [ "$TOTAL_LINES" -gt 0 ]; then
-            LINE_PERCENT=$(( 100 * $COVERED_LINES / $TOTAL_LINES ))
-          fi
-          if [ "$TOTAL_FUNCS" -gt 0 ]; then
-            FUNC_PERCENT=$(( 100 * $COVERED_FUNCS / $TOTAL_FUNCS ))
-          fi
-          if [ "$TOTAL_BRANCHES" -gt 0 ]; then
-            BRANCH_PERCENT=$(( 100 * $COVERED_BRANCHES / $TOTAL_BRANCHES ))
-          fi
-          echo "coverage_report<<EOF" >> $GITHUB_OUTPUT
-          echo "## 📊 Test Coverage Report
-          | Metric | Coverage |
-          |--------|----------|
-          | Lines | $LINE_PERCENT% ($COVERED_LINES/$TOTAL_LINES) |
-          | Functions | $FUNC_PERCENT% ($COVERED_FUNCS/$TOTAL_FUNCS) |
-          | Branches | $BRANCH_PERCENT% ($COVERED_BRANCHES/$TOTAL_BRANCHES) |
-
-          Coverage thresholds: Lines ≥80%, Functions ≥80%, Branches ≥80%
-          " >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        else
-          echo "coverage_report<<EOF" >> $GITHUB_OUTPUT
-          echo "No coverage info found." >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Comment PR with coverage (same repo PRs only)
-      if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const comment = process.env.coverage_report || `## 📊 Test Coverage Report
-          | Metric | Coverage |
-          |--------|----------|
-          | Lines | 0% (0/0) |
-          | Functions | 0% (0/0) |
-          | Branches | 0% (0/0) |
-
-          Coverage thresholds: Lines ≥80%, Functions ≥80%, Branches ≥80%
-          `;
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
-      env:
-        coverage_report: ${{ steps.coverage_report.outputs.coverage_report }}
-
-    - name: Print coverage report to logs (fork PRs)
-      if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-      run: |
-        echo "${{ steps.coverage_report.outputs.coverage_report }}"
+    uses: ./.github/workflows/validate.yml
